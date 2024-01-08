@@ -8,6 +8,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <stdbool.h>
+# include <assert.h>
 # include "include/mlx.h"
 
 # ifndef BUFFER_SIZE
@@ -134,10 +135,9 @@ char	*ft_itoa(int nb);
 char* read_map(const char* filename, int* length);
 int is_map_closed(char* map, int width, int height);
 bool parse_map(const char* filename, t_structure_map *map_info);
-void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays);
+void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays, int color);
 //wall texturesv
 void exit_error(t_structure_main *w);
 void load_wall_textures(t_structure_main *w);
 
 #endif
-

@@ -1,15 +1,18 @@
 #include "cub3d.h"
 
-void	put_pixel_img(t_structure_main *w,int x, int y, int color)
-{
-	char	*dst;
+void put_pixel_img(t_structure_main *w, int x, int y, int color) {
+    char *dst;
 
-	if (x >= 0 && y >= 0 && x < w->s_win.height && y < w->s_win.width)
-	{
-		dst = w->s_img.addr + (y * w->s_img.line_len + x * (w->s_img.bpp / 8));
-		*(unsigned int *) dst = color;
-	}
+    //printf("put_pixel_img: x=%d, y=%d, color=%X\n", x, y, color);  // Ajout pour le débogage
+
+    if (x >= 0 && y >= 0 && x < w->s_win.height && y < w->s_win.width) {
+        dst = w->s_img.addr + (y * w->s_img.line_len + x * (w->s_img.bpp / 8));
+        *(unsigned int *)dst = color;
+    } else {
+        //printf("put_pixel_img: Pixel hors de la fenêtre (x: %d, y: %d)\n", x, y);  // Ajout pour le débogage
+    }
 }
+
 
 void draw_square_raw(t_structure_main *w, int x, int y, int xo, int yo, int color)
 {
@@ -32,6 +35,8 @@ void draw_square(t_structure_main *w, int x, int y, int color) {
     int xo = x * w->s_map.mapS;  // Coordonnée X en pixels
     int yo = y * w->s_map.mapS;  // Coordonnée Y en pixels
     int size = w->s_map.mapS;    // Taille du carré
+
+    //printf("draw_square: x=%d, y=%d, size=%d, color=%X\n", x, y, size, color);  // Ajout pour le débogage
 
     // Dessiner le carré en utilisant la taille et les coordonnées calculées
     for (int i = 0; i < size; i++) {
@@ -181,6 +186,8 @@ void calculateVerticalRay(t_structure_main *w, float ra, float *disV, float *vx,
             dof += 1;
         }
     }
+	printf("Vertical Ray: Angle = %f, Distance = %f, HitX = %f, HitY = %f, WallDir = %d\n", ra, *disV, *vx, *vy, *wallDir);
+
 }
 
 
@@ -229,6 +236,8 @@ void calculateHorizontalRay(t_structure_main *w, float ra, float *disH, float *h
             dof += 1;
         }
     }
+	printf("Horizontal Ray: Angle = %f, Distance = %f, HitX = %f, HitY = %f, WallDir = %d\n", ra, *disH, *hx, *hy, *wallDir);
+
 }
 
 void load_wall_textures(t_structure_main *w) {
@@ -267,7 +276,7 @@ void load_wall_textures(t_structure_main *w) {
     // Stocker la largeur et la hauteur pour une utilisation ultérieure
     w->s_img.texture_width = width;
     w->s_img.texture_height = height;
-
+	printf("Texture Width: %d, Texture Height: %d\n", w->s_img.texture_width, w->s_img.texture_height);
     printf("All wall textures loaded successfully.\n");
 }
 
@@ -278,45 +287,41 @@ void exit_error(t_structure_main *w) {
 }
 
 void draw_background(t_structure_main *w) {
-    int start3DHeight = w->s_win.height / 2; // Le début de la vue 3D à la moitié de la fenêtre
-    int end3DHeight = w->s_win.height; // La fin de la vue 3D est le bas de la fenêtre
-    int half3DHeight = (end3DHeight - start3DHeight) / 2; // La moitié de l'espace 3D
+    // Vérifier si les valeurs de la fenêtre sont initialisées
+    if (w->s_win.height <= 0 || w->s_win.width <= 0) {
+        fprintf(stderr, "Erreur: Dimensions de la fenêtre non initialisées ou incorrectes.\n");
+        return;
+    }
 
-    // Définir la hauteur où le ciel se termine et le sol commence
+    //printf("Dimensions de la fenêtre: largeur = %d, hauteur = %d\n", w->s_win.width, w->s_win.height);
+
+    int start3DHeight = w->s_win.height / 2;
+    int end3DHeight = w->s_win.height;
+    int half3DHeight = (end3DHeight - start3DHeight) / 2;
+
+    // Vérifier la cohérence des hauteurs calculées
+    if (half3DHeight <= 0) {
+        fprintf(stderr, "Erreur: Calcul de la moitié de la hauteur 3D incorrect.\n");
+        return;
+    }
+
+    /*printf("Hauteurs calculées: start3DHeight = %d, end3DHeight = %d, half3DHeight = %d, skyEndHeight = %d\n",
+           start3DHeight, end3DHeight, half3DHeight, start3DHeight + half3DHeight);*/
+
     int skyEndHeight = start3DHeight + half3DHeight;
-
-    // Dessiner le ciel
     draw_square_raw(w, 0, start3DHeight, w->s_win.width, skyEndHeight, 0xB2FFFF);
 
-    // Dessiner le sol avec texture
-    if (w->s_img.ground) {
-        for (int y = skyEndHeight; y < end3DHeight; y += w->s_img.ground_height) {
-            for (int x = 0; x < w->s_win.width; x += w->s_img.ground_width) {
-                mlx_put_image_to_window(w->s_win.mlx, w->s_win.win, w->s_img.ground, x, y);
-            }
-        }
-    } else {
-        // Dessiner le sol uni si la texture n'est pas chargée
+
+        printf("Dessin du sol uni.\n");
         draw_square_raw(w, 0, skyEndHeight, w->s_win.width, end3DHeight, 0x280000);
-    }
 }
 
+int getTextureColor(t_structure_main *w, WallDirection wallDir, int textureX, int textureY) {
+    char *texture_data;
+    int bpp, size_line, endian;
 
-void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays) {
-    int tileSize = w->s_map.mapS;
-    int start3DHeight = w->s_win.height / 2; // Début de la vue 3D à la moitié de la fenêtre
-    int max3DHeight = w->s_win.height / 2; // Hauteur maximale pour la vue 3D
-
-    float lineH = (tileSize * max3DHeight) / disT;
-    if (lineH > max3DHeight) lineH = max3DHeight; // Limiter la hauteur
-
-    float lineOff = start3DHeight + ((max3DHeight - lineH) / 2); // Décaler le début de la ligne pour centrer verticalement
-
-    int rayWidth = w->s_win.width / numRays; // Largeur de chaque rayon
-    int startX = r * rayWidth;
-    int endX = (r + 1) * rayWidth;
-
-    void *selected_texture = NULL;
+    // Sélectionner la texture en fonction de la direction du mur
+    void *selected_texture;
     switch (wallDir) {
         case NORTH:
             selected_texture = w->s_img.north_texture;
@@ -330,107 +335,192 @@ void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDir
         case EAST:
             selected_texture = w->s_img.east_texture;
             break;
+        default:
+            fprintf(stderr, "Invalid wall direction.\n");
+            exit_error(w); // Gestion des erreurs
+            return 0; // Retourne une couleur par défaut en cas d'erreur
     }
 
- if (selected_texture) {
-    int texture_offset = (int)(rx * w->s_img.texture_width) % w->s_img.texture_width; // Exemple d'offset, ajustez selon les besoins
-    char *texture_data = mlx_get_data_addr(selected_texture, &w->s_img.bpp, &w->s_img.line_len, &w->s_img.endian);
+    // Obtenir l'adresse de la texture
+    texture_data = mlx_get_data_addr(selected_texture, &bpp, &size_line, &endian);
+
+    // Calculer la position de la couleur dans la texture
+    int pixel_pos = (textureX + (textureY * w->s_img.texture_width)) * (bpp / 8);
+
+    // Récupérer la couleur de la texture à la position calculée
+    int color = *(int *)(texture_data + pixel_pos);
+    return color;
+}
+
+void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays, int color) {
+    int tileSize = w->s_map.mapS;
+    printf("Ray %d: rx = %f, ry = %f, disT = %f, wallDir = %d\n", r, rx, ry, disT, wallDir);
+    int start3DHeight = w->s_win.height / 2;
+    int max3DHeight = w->s_win.height / 2;
+
+    /*float scalingFactor = 0.8; // Ajuster ce facteur pour modifier la hauteur maximale
+	float lineH = (tileSize / disT) * start3DHeight * scalingFactor;
+	if (lineH > max3DHeight * scalingFactor) lineH = max3DHeight * scalingFactor;*/
+	float lineH = (tileSize * max3DHeight) / disT;
+    if (lineH > max3DHeight) {
+        lineH = max3DHeight; // Limiter la hauteur
+    }
+
+	float lineOff = start3DHeight + ((max3DHeight - lineH) / 2);
+	draw_line(w, (int)w->s_player.px, (int)w->s_player.py, (int)rx, (int)ry, color);
+
+    //if (lineOff < 0) lineOff = 0;
+
+    printf("Drawing Ray: RayID = %d, RayX = %f, RayY = %f, Distance = %f, WallDir = %d, LineHeight = %f, LineOffset = %f\n", r, rx, ry, disT, wallDir, lineH, lineOff);
+    printf("Line height: %f, Line offset: %f\n", lineH, lineOff);
+
+    int rayWidth = w->s_win.width / numRays;
+  	//draw_square_raw(w, r * rayWidth, lineOff, (r + 1) * rayWidth, lineOff + lineH, color / 2);
+
+    int startX = r * rayWidth;
+    int endX = (r + 1) * rayWidth;
+    //int endX = (r == 239) ? w->s_win.width : (r + 1) * rayWidth; // Ajuster endX pour le dernier rayon
+
+    //draw_square_raw(w, startX, lineOff, endX, lineOff + lineH, color / 2);
+	//if (r == numRays - 1) endX = w->s_win.width;
+    printf("Ray start X: %d, Ray end X: %d, Ray width: %d\n", startX, endX, rayWidth);
+
+    //void *selected_texture = NULL;
+    switch (wallDir) {
+        case NORTH:
+            w->s_img.north_texture;
+            break;
+        case SOUTH:
+            w->s_img.south_texture;
+            break;
+        case WEST:
+            w->s_img.west_texture;
+            break;
+        case EAST:
+            w->s_img.east_texture;
+            break;
+    }
+	 int textureWidth = 512; // Largeur de la texture
+    int textureHeight = 512; // Hauteur de la texture
 
     for (int y = lineOff; y < lineOff + lineH; y++) {
-        // Calculez la position Y dans la texture. Ajustez selon les besoins.
-        int texture_y = ((y - lineOff) * w->s_img.texture_height) / lineH;
+        int textureY = ((y - lineOff) * textureHeight) / lineH;
+        if (textureY >= textureHeight) {
+            textureY = textureHeight - 1;
+        }
 
         for (int x = startX; x < endX; x++) {
-            // Calculez la position X dans la texture. Ajustez selon les besoins.
-            int texture_x = texture_offset;
+            int textureX = (int)(rx * textureWidth) % textureWidth;
+            if (textureX >= textureWidth) {
+                textureX = textureWidth - 1;
+            }
 
-            // Obtenez la couleur du pixel de la texture
+            // Obtenez la couleur de la texture aux coordonnées textureX et textureY
+            int color = getTextureColor(w, wallDir, textureX, textureY);
+
+            // Dessinez le pixel avec la couleur de la texture
+            put_pixel_img(w, x, y, color);
+        }
+	}
+
+/*if (selected_texture) {
+    char *texture_data = mlx_get_data_addr(selected_texture, &w->s_img.bpp, &w->s_img.line_len, &w->s_img.endian);
+    assert(texture_data != NULL);
+
+    for (int y = lineOff; y < lineOff + lineH; y++) {
+        int texture_y = ((y - lineOff) * w->s_img.texture_height) / lineH;
+        if (texture_y >= w->s_img.texture_height) {
+            texture_y = w->s_img.texture_height - 1;
+        }
+
+        for (int x = startX; x < endX; x++) {
+            // Calculer texture_x en fonction de la position du rayon et de la direction du mur
+            int texture_x;
+            // Exemple : Si le mur est à l'est ou à l'ouest, utilisez la position Y du rayon
+            // Cela nécessite une logique supplémentaire basée sur la direction du mur
+            if (wallDir == EAST || wallDir == WEST) {
+                texture_x = (int)(ry * w->s_img.texture_width) % w->s_img.texture_width;
+            } else { // NORTH ou SOUTH
+                texture_x = (int)(rx * w->s_img.texture_width) % w->s_img.texture_width;
+            }
+			printf("Texture Mapping: RayID = %d, TextureX = %d, TextureY = %d\n", r, texture_x, texture_y);
+
             int color = *(int *)(texture_data + (texture_x + texture_y * w->s_img.texture_width) * (w->s_img.bpp / 8));
-
-            // Dessinez le pixel sur l'écran
             put_pixel_img(w, x, y, color);
         }
     }
-} else {
-    // Aucune texture sélectionnée, dessinez une couleur unie
-    draw_square_raw(w, startX, lineOff, endX, lineOff + lineH, 0x00FF00); // Utilisez la couleur par défaut
+}else {
+        draw_square_raw(w, r * rayWidth, lineOff, (r + 1) * rayWidth, lineOff + lineH, color / 2); // Couleur par défaut si pas de texture
+    }*/
 }
-}
-
 
 
 
 void drawRays2D(t_structure_main *w) {
     int r, color;
     float ra, disH, disV, disT, hx, hy, vx, vy;
-	WallDirection hWallDir, vWallDir;
+    WallDirection hWallDir, vWallDir;
     int tileSize = w->s_map.mapS;
-	int numRays = 240;
-	float FOV = PI / 3;
-	float DR = FOV / numRays;
+    int numRays = 240;
+    float FOV = PI / 3;
+    float DR = FOV / numRays;
 
-    draw_background(w); // Fonction pour dessiner le fond
+    draw_background(w);
 
     ra = w->s_player.pa - (FOV / 2);
-    for (r = 0; r <= numRays; r++) {
-        if (ra < 0) ra += 2 * PI;
-        if (ra > 2 * PI) ra -= 2 * PI;
+    for (r = 0; r < numRays; r++) {
+        ra = fmod(ra + 2 * PI, 2 * PI);  // Maintenir ra dans l'intervalle [0, 2*PI]
 
         calculateHorizontalRay(w, ra, &disH, &hx, &hy, &hWallDir);
         calculateVerticalRay(w, ra, &disV, &vx, &vy, &vWallDir);
 
-        disT = (disH < disV) ? disH : disV;  // Choisir la distance la plus courte
-		WallDirection wallDir = (disH < disV) ? hWallDir : vWallDir;
-        color = (disH < disV) ? 0xFF0000 : 0x00FF00;  // Rouge pour horizontal, Vert pour vertical
-		      switch(wallDir) {
-            case NORTH:
-                // Utiliser la texture du mur Nord
-                break;
-            case SOUTH:
-                // Utiliser la texture du mur Sud
-                break;
-            case WEST:
-                // Utiliser la texture du mur Ouest
-                break;
-            case EAST:
-                // Utiliser la texture du mur Est
-                break;
-            default:
-                color = 0x00FF00; // Couleur par défaut (ou texture)
-                break;
-        }
-        disT = correctFisheye(disT, ra, w->s_player.pa);  // Corriger l'effet fisheye
+        disT = (disH < disV) ? disH : disV;
+		color = (disH < disV) ? 0xFF0000 : 0x00FF00;
+        WallDirection wallDir = (disH < disV) ? hWallDir : vWallDir;
 
-        drawRay(w, r, (disH < disV) ? hx : vx, (disH < disV) ? hy : vy, disT, color, numRays);
+        disT = correctFisheye(disT, ra, w->s_player.pa);
+		printf("Selected Ray: RayID = %d, Angle = %f, ShortestDistance = %f, WallDir = %d\n", r, ra, disT, wallDir);
+
+        drawRay(w, r, (disH < disV) ? hx : vx, (disH < disV) ? hy : vy, disT, wallDir, numRays, color);
+
         ra += DR;
     }
 }
 
+
 void draw_map(t_structure_main *w) {
-    // Log pour vérifier la taille de la carte
+    if (!w->s_map.map) {
+        printf("Erreur: La carte n'a pas été chargée correctement.\n");
+        return;
+    }
+
     printf("Drawing map of size: %d x %d\n", w->s_map.mapX, w->s_map.mapY);
 
+    for (int y = 0; y < w->s_map.mapY; y++) {
+        int lineLength = 0; // Longueur réelle de la ligne
+        while (lineLength < w->s_map.mapX && w->s_map.map[y * w->s_map.mapX + lineLength] != '\n' && w->s_map.map[y * w->s_map.mapX + lineLength] != '\0') {
+            lineLength++;
+        }
 
-    int x;
-    int y;
-    int color;
+        for (int x = 0; x < lineLength; x++) {
+            int index = y * w->s_map.mapX + x;
+            if (index >= w->s_map.mapX * w->s_map.mapY) {
+                fprintf(stderr, "Erreur: Tentative d'accès hors limites de la carte à l'indice %d.\n", index);
+                continue;
+            }
 
-    for (y = 0; y < w->s_map.mapY; y++) {
-        for (x = 0; x < w->s_map.mapX; x++) {
-            if (w->s_map.map[y * w->s_map.mapX + x] == '1')
-                color = 0xFFFFFF;  // Couleur pour les murs
-            else if (w->s_map.map[y * w->s_map.mapX + x] == ' ')
-                color = 0x000000;  // Couleur pour l'espace vide
-            else
-                color = 0x666666;  // Couleur par défaut
+            int color;
+            switch (w->s_map.map[index]) {
+                case '1': color = 0xFFFFFF; break;
+                case '0': color = 0x000000; break;
+                default: color = 0x666666; break;
+            }
 
             draw_square(w, x, y, color);
+            //printf("x: %d, y: %d, char: %c\n", x, y, w->s_map.map[index]);
         }
-		printf("x: %d, y: %d, char: %c\n", x, y, w->s_map.map[y * w->s_map.mapX + x]);
     }
 }
-
-
 
 int jkl = -1;
 int yui = 0;
@@ -456,7 +546,6 @@ void test2(t_structure_main *w) {
     rescale_image(w->s_win.mlx, w->s_win.win, w->s_img.roomadslam[jkl],
                   112, 112, new_sprite_width, new_sprite_height, sprite_x, sprite_y, w);
 }
-
 
 void test(t_structure_main *w)
 {
@@ -492,16 +581,20 @@ void test(t_structure_main *w)
 void	init_windows(t_structure_main *w)
 {
 	int temp;
-	w->s_win.height = 1018;
-	w->s_win.width = 1024;
+	w->s_win.height = 1080;
+	w->s_win.width = 1920;
 	w->s_win.mlx = mlx_init();
-	w->s_win.win = mlx_new_window(w->s_win.mlx, w->s_win.height, w->s_win.width, "WF99");
+	w->s_win.win = mlx_new_window(w->s_win.mlx, w->s_win.width, w->s_win.height, "WF99");
 	w->s_player.px = 250;
 	w->s_player.py = 200;
 	w->s_player.pa = 0.1;
 	w->s_player.pdx = cos(w->s_player.pa) * 5;
 	w->s_player.pdy = sin(w->s_player.pa) * 5;
 	load_wall_textures(w);
+	// Après le chargement des textures
+printf("Window Dimensions: Width = %d, Height = %d\n", w->s_win.width, w->s_win.height);
+printf("Texture Dimensions: Width = %d, Height = %d\n", w->s_img.texture_width, w->s_img.texture_height);
+
 
 	w->s_img.img_player = mlx_xpm_file_to_image(w->s_win.mlx, "sprite/player.xpm", &temp,&temp);
 	w->s_img.img_wall = mlx_xpm_file_to_image(w->s_win.mlx, "sprite/wall.xpm", &temp,&temp);
@@ -534,8 +627,6 @@ void	init_windows(t_structure_main *w)
 
 }
 
-#include "cub3d.h"
-
 int main(int argc, char **argv) {
     t_structure_main w;
 
@@ -559,7 +650,7 @@ int main(int argc, char **argv) {
     }
 
     // Initialiser la fenêtre et d'autres composants
-    init_windows(&w);
+	init_windows(&w);
 
     // Configurer les hooks et entrer dans la boucle principale
     mlx_loop_hook(w.s_win.mlx, (void *)test, &w);

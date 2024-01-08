@@ -73,14 +73,6 @@ int is_map_closed(char* map, int maxWidth, int height) {
     return 1;  // Map is closed
 }
 
-
-
-
-
-
-
-
-
 bool parse_map(const char* filename, t_structure_map *map_info) {
 	int length;
 	char* buffer = read_map(filename, &length);
