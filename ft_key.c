@@ -71,7 +71,7 @@ int	deal_key(int key, t_structure_main *w)
 		kill_prog(w);
 	else if (key == 65361)
 	{
-		w->s_player.pa -= 3*((PI/3)/240);
+		w->s_player.pa -= 3*((PI/3)/1280);
 		if (w->s_player.pa < 0)
 			w->s_player.pa += 2 * PI;
 		w->s_player.pdx = cos(w->s_player.pa) * 5;
@@ -79,7 +79,7 @@ int	deal_key(int key, t_structure_main *w)
 	}
 	else if (key == 65363)
 	{
-		w->s_player.pa += 3*((PI/3)/240);
+		w->s_player.pa += 3*((PI/3)/1280);
 		if (w->s_player.pa > 2 * PI)
 			w->s_player.pa -= 2 * PI;
 		w->s_player.pdx = cos(w->s_player.pa) * 5;

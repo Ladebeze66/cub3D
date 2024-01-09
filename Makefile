@@ -7,6 +7,7 @@ SRC		= 	main.c				\
 			ft_key.c			\
 			ft_utils_convert.c			\
 			ft_parsing.c \
+			blend_color.c \
 
 OBJ		= $(SRC:.c=.o)
 
@@ -20,7 +21,7 @@ $(NAME): $(OBJ)
 all:	$(NAME)
 
 clean:
-		$(RM) $(OBJ) 
+		$(RM) $(OBJ)
 
 fclean:		clean
 		$(RM) $(NAME)

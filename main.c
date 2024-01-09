@@ -3,15 +3,16 @@
 void put_pixel_img(t_structure_main *w, int x, int y, int color) {
     char *dst;
 
-    //printf("put_pixel_img: x=%d, y=%d, color=%X\n", x, y, color);  // Ajout pour le débogage
-
-    if (x >= 0 && y >= 0 && x < w->s_win.height && y < w->s_win.width) {
+    // Correction : x vérifié avec la largeur et y avec la hauteur
+    if (x >= 0 && y >= 0 && x < w->s_win.width && y < w->s_win.height) {
         dst = w->s_img.addr + (y * w->s_img.line_len + x * (w->s_img.bpp / 8));
         *(unsigned int *)dst = color;
     } else {
-        //printf("put_pixel_img: Pixel hors de la fenêtre (x: %d, y: %d)\n", x, y);  // Ajout pour le débogage
+        // Ajout de logs pour les cas où les coordonnées sont hors limites
+        //printf("put_pixel_img: pixel hors limites (x: %d, y: %d)\n", x, y);
     }
 }
+
 
 
 void draw_square_raw(t_structure_main *w, int x, int y, int xo, int yo, int color)
@@ -21,22 +22,24 @@ void draw_square_raw(t_structure_main *w, int x, int y, int xo, int yo, int colo
 
 	int size_x = abs(xo - x);
 	int size_y = abs(yo - y);
+	printf("draw_square_raw called with x: %d, y: %d, xo: %d, yo: %d\n", x, y, xo, yo);
+    printf("Calculated size_x: %d, size_y: %d\n", size_x, size_y);
 
 	for (i = 0; i < size_y; i++)
 	{
 		for (j = 0; j < size_x; j++)
 		{
 			put_pixel_img(w, (x) + j, (y) + i, color);
+			//printf("Drawing pixel at x: %d, y: %d\n", (x) + j, (y) + i);
 		}
 	}
+	 //printf("draw_square_raw completed\n");
 }
 
 void draw_square(t_structure_main *w, int x, int y, int color) {
     int xo = x * w->s_map.mapS;  // Coordonnée X en pixels
     int yo = y * w->s_map.mapS;  // Coordonnée Y en pixels
     int size = w->s_map.mapS;    // Taille du carré
-
-    //printf("draw_square: x=%d, y=%d, size=%d, color=%X\n", x, y, size, color);  // Ajout pour le débogage
 
     // Dessiner le carré en utilisant la taille et les coordonnées calculées
     for (int i = 0; i < size; i++) {
@@ -53,6 +56,8 @@ void draw_line(t_structure_main *w, int x0, int y0, int x1, int y1, int color)
 	int dx = abs(x1 - x0);
 	int dy = abs(y1 - y0);
 	int sx, sy;
+	//printf("draw_line - x0: %d, y0: %d, x1: %d, y1: %d\n", x0, y0, x1, y1);
+
 
 	if (x0 < x1)
 		sx = 1;
@@ -82,7 +87,10 @@ void draw_line(t_structure_main *w, int x0, int y0, int x1, int y1, int color)
 			err += dx;
 			y0 += sy;
 		}
+		//printf("Tracing - x0: %d, y0: %d\n", x0, y0);
 	}
+	//printf("draw_line completed\n");
+
 }
 
 float dist(float ax, float ay, float bx, float by)
@@ -136,17 +144,28 @@ void rescale_image(void *mlx, void *win, void *original_img, int original_width,
 }
 
 float correctFisheye(float distance, float ra, float playerAngle) {
+    // Ajouter des logs pour vérifier les valeurs en entrée
+    //printf("Input Distance: %f\n", distance);
+    //printf("Input Ray Angle: %f\n", ra);
+    //printf("Input Player Angle: %f\n", playerAngle);
+
     float ca = playerAngle - ra;
     if (ca < 0) ca += 2 * PI;
     if (ca > 2 * PI) ca -= 2 * PI;
-    return distance * cos(ca);
+    float correctedDistance = distance * cos(ca);
+
+    // Ajouter un log pour vérifier la valeur corrigée
+    //printf("Corrected Distance: %f\n", correctedDistance);
+
+    return correctedDistance;
 }
+
 
 void calculateVerticalRay(t_structure_main *w, float ra, float *disV, float *vx, float *vy, WallDirection *wallDir) {
     int dof = 0, mx, my, mp;
     float rx, ry, xo, yo;
     int tileSize = w->s_map.mapS;
-    *disV = 1000000;  // Distance initialement grande
+    *disV = 100000;  // Distance initialement grande
 	*wallDir = NONE;
     float nTan = -tan(ra);
 
@@ -163,15 +182,15 @@ void calculateVerticalRay(t_structure_main *w, float ra, float *disV, float *vx,
     } else {  // Rayon directement en haut ou en bas
         rx = w->s_player.px;
         ry = w->s_player.py;
-        dof = 25;
+        dof = 35;
     }
 
-    while (dof < 25) {
+    while (dof < 35) {
         mx = (int)(rx) / tileSize;
         my = (int)(ry) / tileSize;
         mp = my * w->s_map.mapX + mx;
         if (mp >= 0 && mp < w->s_map.mapX * w->s_map.mapY && w->s_map.map[mp] == '1') {
-            dof = 25;
+            dof = 35;
             *vx = rx;
             *vy = ry;
             *disV = dist(w->s_player.px, w->s_player.py, rx, ry);
@@ -186,20 +205,21 @@ void calculateVerticalRay(t_structure_main *w, float ra, float *disV, float *vx,
             dof += 1;
         }
     }
-	printf("Vertical Ray: Angle = %f, Distance = %f, HitX = %f, HitY = %f, WallDir = %d\n", ra, *disV, *vx, *vy, *wallDir);
+	//printf("tileSize: %d\n", tileSize);
+	//printf("Ray Angle (ra): %f\n", ra);
 
-}
+	//printf("Vertical Ray: Angle = %f, Iteration = %d, rx = %f, ry = %f, disV = %f, wallDir = %d\n", ra, dof, rx, ry, *disV, *wallDir);
+    }
 
 
 void calculateHorizontalRay(t_structure_main *w, float ra, float *disH, float *hx, float *hy, WallDirection *wallDir) {
     int dof = 0, mx, my, mp;
     float rx, ry, xo, yo;
     int tileSize = w->s_map.mapS;
-    *disH = 1000000;  // Distance initialement grande
+    *disH = 100000;  // Distance initialement grande
 	*wallDir = NONE;
 
     float aTan = -1 / tan(ra);
-
     if (ra > PI) {
         ry = (((int)w->s_player.py / tileSize) * tileSize) - 0.0001;
         rx = (w->s_player.py - ry) * aTan + w->s_player.px;
@@ -213,15 +233,14 @@ void calculateHorizontalRay(t_structure_main *w, float ra, float *disH, float *h
     } else {  // Rayon directement à gauche ou à droite
         rx = w->s_player.px;
         ry = w->s_player.py;
-        dof = 25;
+        dof = 35;
     }
-
-    while (dof < 25) {
+    while (dof < 35) {
         mx = (int)(rx) / tileSize;
         my = (int)(ry) / tileSize;
         mp = my * w->s_map.mapX + mx;
         if (mp >= 0 && mp < w->s_map.mapX * w->s_map.mapY && w->s_map.map[mp] == '1') {
-            dof = 25;
+            dof = 35;
             *hx = rx;
             *hy = ry;
             *disH = dist(w->s_player.px, w->s_player.py, rx, ry);
@@ -236,7 +255,9 @@ void calculateHorizontalRay(t_structure_main *w, float ra, float *disH, float *h
             dof += 1;
         }
     }
-	printf("Horizontal Ray: Angle = %f, Distance = %f, HitX = %f, HitY = %f, WallDir = %d\n", ra, *disH, *hx, *hy, *wallDir);
+	//printf("tileSize: %d\n", tileSize);
+	//printf("Ray Angle (ra): %f\n", ra);
+	//printf("Horizontal Ray: Angle = %f, Iteration = %d, rx = %f, ry = %f, disH = %f, wallDir = %d\n", ra, dof, rx, ry, *disH, *wallDir);
 
 }
 
@@ -276,8 +297,8 @@ void load_wall_textures(t_structure_main *w) {
     // Stocker la largeur et la hauteur pour une utilisation ultérieure
     w->s_img.texture_width = width;
     w->s_img.texture_height = height;
-	printf("Texture Width: %d, Texture Height: %d\n", w->s_img.texture_width, w->s_img.texture_height);
-    printf("All wall textures loaded successfully.\n");
+	//printf("Texture Width: %d, Texture Height: %d\n", w->s_img.texture_width, w->s_img.texture_height);
+    //printf("All wall textures loaded successfully.\n");
 }
 
 void exit_error(t_structure_main *w) {
@@ -293,11 +314,13 @@ void draw_background(t_structure_main *w) {
         return;
     }
 
-    //printf("Dimensions de la fenêtre: largeur = %d, hauteur = %d\n", w->s_win.width, w->s_win.height);
+    // Largeur de décalage vers la droite
+    int backgroundOffsetX = 0; // Vous pouvez ajuster cette valeur selon votre besoin
 
-    int start3DHeight = w->s_win.height / 2;
+    int start3DHeight = 0;
     int end3DHeight = w->s_win.height;
     int half3DHeight = (end3DHeight - start3DHeight) / 2;
+	//printf("end3DHeight: %d\n", end3DHeight);
 
     // Vérifier la cohérence des hauteurs calculées
     if (half3DHeight <= 0) {
@@ -305,16 +328,15 @@ void draw_background(t_structure_main *w) {
         return;
     }
 
-    /*printf("Hauteurs calculées: start3DHeight = %d, end3DHeight = %d, half3DHeight = %d, skyEndHeight = %d\n",
-           start3DHeight, end3DHeight, half3DHeight, start3DHeight + half3DHeight);*/
-
     int skyEndHeight = start3DHeight + half3DHeight;
-    draw_square_raw(w, 0, start3DHeight, w->s_win.width, skyEndHeight, 0xB2FFFF);
 
+    // Dessiner le ciel (sky) avec un décalage vers la droite
+    draw_square_raw(w, backgroundOffsetX, start3DHeight, w->s_win.width + backgroundOffsetX, half3DHeight + start3DHeight, 0xB2FFFF);
 
-        printf("Dessin du sol uni.\n");
-        draw_square_raw(w, 0, skyEndHeight, w->s_win.width, end3DHeight, 0x280000);
+    // Dessiner le sol (ground) avec un décalage vers la droite
+    draw_square_raw(w, backgroundOffsetX, skyEndHeight, w->s_win.width + backgroundOffsetX, w->s_win.height, 0x280000);
 }
+
 
 int getTextureColor(t_structure_main *w, WallDirection wallDir, int textureX, int textureY) {
     char *texture_data;
@@ -343,116 +365,94 @@ int getTextureColor(t_structure_main *w, WallDirection wallDir, int textureX, in
 
     // Obtenir l'adresse de la texture
     texture_data = mlx_get_data_addr(selected_texture, &bpp, &size_line, &endian);
+	//printf("TextureX: %d, TextureY: %d\n", textureX, textureY);
+    //printf("BPP: %d, Size Line: %d, Endian: %d\n", bpp, size_line, endian);
 
     // Calculer la position de la couleur dans la texture
     int pixel_pos = (textureX + (textureY * w->s_img.texture_width)) * (bpp / 8);
+	//printf("Pixel Position: %d\n", pixel_pos);
 
     // Récupérer la couleur de la texture à la position calculée
     int color = *(int *)(texture_data + pixel_pos);
     return color;
 }
 
-void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays, int color) {
-    int tileSize = w->s_map.mapS;
-    printf("Ray %d: rx = %f, ry = %f, disT = %f, wallDir = %d\n", r, rx, ry, disT, wallDir);
-    int start3DHeight = w->s_win.height / 2;
-    int max3DHeight = w->s_win.height / 2;
-
-    /*float scalingFactor = 0.8; // Ajuster ce facteur pour modifier la hauteur maximale
-	float lineH = (tileSize / disT) * start3DHeight * scalingFactor;
-	if (lineH > max3DHeight * scalingFactor) lineH = max3DHeight * scalingFactor;*/
-	float lineH = (tileSize * max3DHeight) / disT;
-    if (lineH > max3DHeight) {
-        lineH = max3DHeight; // Limiter la hauteur
-    }
-
-	float lineOff = start3DHeight + ((max3DHeight - lineH) / 2);
-	draw_line(w, (int)w->s_player.px, (int)w->s_player.py, (int)rx, (int)ry, color);
-
-    //if (lineOff < 0) lineOff = 0;
-
-    printf("Drawing Ray: RayID = %d, RayX = %f, RayY = %f, Distance = %f, WallDir = %d, LineHeight = %f, LineOffset = %f\n", r, rx, ry, disT, wallDir, lineH, lineOff);
-    printf("Line height: %f, Line offset: %f\n", lineH, lineOff);
-
-    int rayWidth = w->s_win.width / numRays;
-  	//draw_square_raw(w, r * rayWidth, lineOff, (r + 1) * rayWidth, lineOff + lineH, color / 2);
-
-    int startX = r * rayWidth;
-    int endX = (r + 1) * rayWidth;
-    //int endX = (r == 239) ? w->s_win.width : (r + 1) * rayWidth; // Ajuster endX pour le dernier rayon
-
-    //draw_square_raw(w, startX, lineOff, endX, lineOff + lineH, color / 2);
-	//if (r == numRays - 1) endX = w->s_win.width;
-    printf("Ray start X: %d, Ray end X: %d, Ray width: %d\n", startX, endX, rayWidth);
-
-    //void *selected_texture = NULL;
-    switch (wallDir) {
-        case NORTH:
-            w->s_img.north_texture;
-            break;
-        case SOUTH:
-            w->s_img.south_texture;
-            break;
-        case WEST:
-            w->s_img.west_texture;
-            break;
-        case EAST:
-            w->s_img.east_texture;
-            break;
-    }
-	 int textureWidth = 512; // Largeur de la texture
-    int textureHeight = 512; // Hauteur de la texture
+static void draw_texture(t_structure_main *w, int startX, int endX, int lineOff, int lineH, WallDirection wallDir, float rx, float ry) {
+    int textureWidth = w->s_img.texture_width;
+    int textureHeight = w->s_img.texture_height;
 
     for (int y = lineOff; y < lineOff + lineH; y++) {
-        int textureY = ((y - lineOff) * textureHeight) / lineH;
+        int textureY = ((float)(y - lineOff) / lineH) * textureHeight; // Ajustement de la texture Y
         if (textureY >= textureHeight) {
             textureY = textureHeight - 1;
         }
 
         for (int x = startX; x < endX; x++) {
-            int textureX = (int)(rx * textureWidth) % textureWidth;
+            int textureX;
+            switch (wallDir) {
+                case NORTH:
+                case SOUTH:
+                    textureX = (int)(rx * textureWidth) % textureWidth;
+                    break;
+                case WEST:
+                case EAST:
+                    textureX = (int)(ry * textureWidth) % textureWidth;
+                    break;
+            }
             if (textureX >= textureWidth) {
                 textureX = textureWidth - 1;
             }
-
-            // Obtenez la couleur de la texture aux coordonnées textureX et textureY
             int color = getTextureColor(w, wallDir, textureX, textureY);
-
-            // Dessinez le pixel avec la couleur de la texture
-            put_pixel_img(w, x, y, color);
-        }
-	}
-
-/*if (selected_texture) {
-    char *texture_data = mlx_get_data_addr(selected_texture, &w->s_img.bpp, &w->s_img.line_len, &w->s_img.endian);
-    assert(texture_data != NULL);
-
-    for (int y = lineOff; y < lineOff + lineH; y++) {
-        int texture_y = ((y - lineOff) * w->s_img.texture_height) / lineH;
-        if (texture_y >= w->s_img.texture_height) {
-            texture_y = w->s_img.texture_height - 1;
-        }
-
-        for (int x = startX; x < endX; x++) {
-            // Calculer texture_x en fonction de la position du rayon et de la direction du mur
-            int texture_x;
-            // Exemple : Si le mur est à l'est ou à l'ouest, utilisez la position Y du rayon
-            // Cela nécessite une logique supplémentaire basée sur la direction du mur
-            if (wallDir == EAST || wallDir == WEST) {
-                texture_x = (int)(ry * w->s_img.texture_width) % w->s_img.texture_width;
-            } else { // NORTH ou SOUTH
-                texture_x = (int)(rx * w->s_img.texture_width) % w->s_img.texture_width;
-            }
-			printf("Texture Mapping: RayID = %d, TextureX = %d, TextureY = %d\n", r, texture_x, texture_y);
-
-            int color = *(int *)(texture_data + (texture_x + texture_y * w->s_img.texture_width) * (w->s_img.bpp / 8));
             put_pixel_img(w, x, y, color);
         }
     }
-}else {
-        draw_square_raw(w, r * rayWidth, lineOff, (r + 1) * rayWidth, lineOff + lineH, color / 2); // Couleur par défaut si pas de texture
-    }*/
 }
+
+
+void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays, int color) {
+    int tileSize = w->s_map.mapS;
+    int start3DHeight = 0; // Début en haut de la fenêtre
+    int max3DHeight = w->s_win.height + start3DHeight;
+
+    // Assurez-vous que la fenêtre 3D ne dépasse pas la hauteur du background
+    /*if (max3DHeight > w->s_win.height) {
+        max3DHeight = w->s_win.height;
+    }*/
+
+    float lineH = (tileSize * max3DHeight) / disT;
+    lineH = lineH > max3DHeight ? max3DHeight : lineH;
+     float lineOff = ((max3DHeight - lineH) / 2);
+	//printf("drawRay - r: %d, rx: %f, ry: %f, disT: %f, wallDir: %d, numRays: %d\n", r, rx, ry, disT, wallDir, numRays);
+
+
+    // Décalage horizontal de l'arrière-plan
+    int backgroundOffsetX = 0; // Vous pouvez ajuster cette valeur selon votre besoin
+
+    // Calculer les coordonnées de début et de fin du rayon ajustées pour le décalage
+    int rayWidth = w->s_win.width / numRays;
+
+    int startX = r * rayWidth;
+    int endX = startX + rayWidth;
+
+    // Ajouter le décalage horizontal à toutes les coordonnées X
+    startX += backgroundOffsetX;
+    endX += backgroundOffsetX;
+	//printf("lineH: %f, lineOff: %f, rayWidth: %d\n", lineH, lineOff, rayWidth);
+
+
+    // Ajouter des instructions de débogage pour afficher les valeurs de startX et endX
+    //printf("Ray %d - startX: %d, endX: %d\n", r, startX, endX);
+
+    // Dessiner le rayon
+    draw_line(w, (int)w->s_player.px, (int)w->s_player.py, (int)rx + backgroundOffsetX, (int)ry, color);
+
+    // Dessiner la texture ajustée pour le décalage
+    draw_texture(w, startX, endX, lineOff, lineH, wallDir, rx + backgroundOffsetX, ry);
+}
+
+
+
+
 
 
 
@@ -461,9 +461,14 @@ void drawRays2D(t_structure_main *w) {
     float ra, disH, disV, disT, hx, hy, vx, vy;
     WallDirection hWallDir, vWallDir;
     int tileSize = w->s_map.mapS;
-    int numRays = 240;
-    float FOV = PI / 3;
+    int numRays = 1280;
+    float FOV = 80 * (PI / 180);
     float DR = FOV / numRays;
+
+    // Ajouter des logs pour vérifier les valeurs
+    //printf("numRays: %d\n", numRays);
+    //printf("FOV: %f\n", FOV);
+    //printf("DR: %f\n", DR);
 
     draw_background(w);
 
@@ -475,17 +480,25 @@ void drawRays2D(t_structure_main *w) {
         calculateVerticalRay(w, ra, &disV, &vx, &vy, &vWallDir);
 
         disT = (disH < disV) ? disH : disV;
-		color = (disH < disV) ? 0xFF0000 : 0x00FF00;
+        color = (disH < disV) ? 0xFF0000 : 0x00FF00;
         WallDirection wallDir = (disH < disV) ? hWallDir : vWallDir;
 
         disT = correctFisheye(disT, ra, w->s_player.pa);
-		printf("Selected Ray: RayID = %d, Angle = %f, ShortestDistance = %f, WallDir = %d\n", r, ra, disT, wallDir);
+
+        // Ajouter des logs pour déboguer
+        //printf("Ray ID: %d\n", r);
+        //printf("Ray Angle: %f\n", ra);
+        //printf("Shortest Distance: %f\n", disT);
+        //printf("Wall Direction: %d\n", wallDir);
 
         drawRay(w, r, (disH < disV) ? hx : vx, (disH < disV) ? hy : vy, disT, wallDir, numRays, color);
+		//draw_map(w);
 
         ra += DR;
     }
 }
+
+
 
 
 void draw_map(t_structure_main *w) {
@@ -494,7 +507,7 @@ void draw_map(t_structure_main *w) {
         return;
     }
 
-    printf("Drawing map of size: %d x %d\n", w->s_map.mapX, w->s_map.mapY);
+    //printf("Drawing map of size: %d x %d\n", w->s_map.mapX, w->s_map.mapY);
 
     for (int y = 0; y < w->s_map.mapY; y++) {
         int lineLength = 0; // Longueur réelle de la ligne
@@ -509,28 +522,43 @@ void draw_map(t_structure_main *w) {
                 continue;
             }
 
-            int color;
-            switch (w->s_map.map[index]) {
-                case '1': color = 0xFFFFFF; break;
-                case '0': color = 0x000000; break;
-                default: color = 0x666666; break;
-            }
+        int color;
+		float alpha; // Définissez la transparence ici (0.0 pour totalement transparent, 1.0 pour totalement opaque)
+
+		switch (w->s_map.map[index]) {
+    	case '1':
+        // Couleur grise avec une transparence de 30%
+        color = (int)(0.5 * 255) << 24 | 0xAAAAAA;
+        break;
+    	case '0':
+        // Couleur noire avec une transparence de 30%
+        color = (int)(0.0 * 255) << 24 | 0x000000;
+        break;
+    	default:
+        // Couleur par défaut avec une transparence de 30%
+        color = (int)(0.0 * 255) << 24 | 0x000000;
+        break;
+}
+
+            //printf("Drawing square at (x: %d, y: %d) with color: 0x%06X\n", x, y, color);
 
             draw_square(w, x, y, color);
-            //printf("x: %d, y: %d, char: %c\n", x, y, w->s_map.map[index]);
         }
     }
 }
+
 
 int jkl = -1;
 int yui = 0;
 
 void test2(t_structure_main *w) {
     mlx_destroy_image(w->s_win.mlx, w->s_img.buffer);
-    w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.height, w->s_win.width);
+    w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.width, w->s_win.height);
     w->s_img.addr = mlx_get_data_addr(w->s_img.buffer, &(w->s_img.bpp), &(w->s_img.line_len), &(w->s_img.endian));
-    draw_map(w);
     drawRays2D(w);
+	draw_map(w);
+	//drawRays2D(w);
+
     mlx_put_image_to_window(w->s_win.mlx, w->s_win.win, w->s_img.buffer, 0, 0);
 
     int new_sprite_width = w->s_map.mapS;
@@ -539,8 +567,8 @@ void test2(t_structure_main *w) {
     int sprite_y = w->s_player.py - new_sprite_height / 2;
 
     // Log des valeurs pour le débogage
-    printf("Sprite (x, y): (%d, %d), Size (w, h): (%d, %d), MapS: %d\n",
-           sprite_x, sprite_y, new_sprite_width, new_sprite_height, w->s_map.mapS);
+    /*printf("Sprite (x, y): (%d, %d), Size (w, h): (%d, %d), MapS: %d\n",
+           sprite_x, sprite_y, new_sprite_width, new_sprite_height, w->s_map.mapS);*/
 
     // Redimensionner et dessiner le sprite du personnage
     rescale_image(w->s_win.mlx, w->s_win.win, w->s_img.roomadslam[jkl],
@@ -581,31 +609,57 @@ void test(t_structure_main *w)
 void	init_windows(t_structure_main *w)
 {
 	int temp;
-	w->s_win.height = 1080;
-	w->s_win.width = 1920;
+	w->s_win.width = 1280;
+	w->s_win.height = 720;
+
 	w->s_win.mlx = mlx_init();
+	if (w->s_win.mlx == NULL) {
+    fprintf(stderr, "Erreur : Échec de mlx_init.\n");
+    return; // Ajoutez un retour ou une gestion d'erreur appropriée
+	}
 	w->s_win.win = mlx_new_window(w->s_win.mlx, w->s_win.width, w->s_win.height, "WF99");
-	w->s_player.px = 250;
-	w->s_player.py = 200;
+	if (w->s_win.win == NULL) {
+    fprintf(stderr, "Erreur : Échec de mlx_new_window.\n");
+    return; // Ajoutez un retour ou une gestion d'erreur appropriée
+	}
+	w->s_player.px = 10;
+	w->s_player.py = 10;
 	w->s_player.pa = 0.1;
 	w->s_player.pdx = cos(w->s_player.pa) * 5;
 	w->s_player.pdy = sin(w->s_player.pa) * 5;
 	load_wall_textures(w);
 	// Après le chargement des textures
-printf("Window Dimensions: Width = %d, Height = %d\n", w->s_win.width, w->s_win.height);
-printf("Texture Dimensions: Width = %d, Height = %d\n", w->s_img.texture_width, w->s_img.texture_height);
+	printf("Window Dimensions: Width = %d, Height = %d\n", w->s_win.width, w->s_win.height);
+	printf("Texture Dimensions: Width = %d, Height = %d\n", w->s_img.texture_width, w->s_img.texture_height);
 
 
 	w->s_img.img_player = mlx_xpm_file_to_image(w->s_win.mlx, "sprite/player.xpm", &temp,&temp);
 	w->s_img.img_wall = mlx_xpm_file_to_image(w->s_win.mlx, "sprite/wall.xpm", &temp,&temp);
-	w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.height, w->s_win.width);
+	w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.width, w->s_win.height);
+
+	// Vérifiez ensuite que ces dimensions correspondent à la taille de la fenêtre
+	if (w->s_img.buffer == NULL) {
+    fprintf(stderr, "Erreur : Échec de mlx_new_image pour le buffer.\n");
+    return; // Gestion d'erreur appropriée
+	} else {
+    // Vérification des dimensions du buffer
+    int bpp, size_line, endian;
+    char *buffer_addr = mlx_get_data_addr(w->s_img.buffer, &bpp, &size_line, &endian);
+    if (buffer_addr == NULL) {
+        fprintf(stderr, "Erreur : Impossible d'obtenir l'adresse du buffer.\n");
+    } else {
+        fprintf(stdout, "Buffer créé avec Largeur: %d, Hauteur: %d\n", w->s_win.width, w->s_win.height);
+        fprintf(stdout, "BPP (bits per pixel) : %d, Size line : %d, Endian : %d\n", bpp, size_line, endian);
+    }
+}
+
 	// Initialiser le compteur de FPS
 	gettimeofday(&(w->start_time), NULL);
 	w->end_time = w->start_time;
 	w->frame_count = 0;
 
-    int mapS_x = w->s_win.width / (w->s_map.mapX * 2);
-    int mapS_y = w->s_win.height / w->s_map.mapY;
+    int mapS_x = w->s_win.width / (w->s_map.mapX * 4);
+    int mapS_y = w->s_win.height / (w->s_map.mapY * 2);
     w->s_map.mapS = (mapS_x < mapS_y) ? mapS_x : mapS_y;
 
 

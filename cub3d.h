@@ -12,7 +12,7 @@
 # include "include/mlx.h"
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1000
+#  define BUFFER_SIZE 100000
 # endif
 
 # define PI 3.1415926535
@@ -139,5 +139,11 @@ void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDir
 //wall texturesv
 void exit_error(t_structure_main *w);
 void load_wall_textures(t_structure_main *w);
+//transparence
+int blendColor(int color1, int color2, float alpha);
+void drawTransparentSquare(t_structure_main *w, int x, int y, int color, float alpha);
+//2D map
+void draw_square(t_structure_main *w, int x, int y, int color);
+void draw_map(t_structure_main *w);
 
 #endif
