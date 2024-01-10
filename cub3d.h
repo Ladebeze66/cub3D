@@ -15,7 +15,7 @@
 #  define BUFFER_SIZE 100000
 # endif
 
-# define PI 3.1415926535
+# define PI 3.14159265359
 # define P2 PI/2
 # define P3 3*PI/2
 //# define DR 0.0174533

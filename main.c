@@ -13,8 +13,6 @@ void put_pixel_img(t_structure_main *w, int x, int y, int color) {
     }
 }
 
-
-
 void draw_square_raw(t_structure_main *w, int x, int y, int xo, int yo, int color)
 {
 	int i;
@@ -22,8 +20,8 @@ void draw_square_raw(t_structure_main *w, int x, int y, int xo, int yo, int colo
 
 	int size_x = abs(xo - x);
 	int size_y = abs(yo - y);
-	printf("draw_square_raw called with x: %d, y: %d, xo: %d, yo: %d\n", x, y, xo, yo);
-    printf("Calculated size_x: %d, size_y: %d\n", size_x, size_y);
+	//printf("draw_square_raw called with x: %d, y: %d, xo: %d, yo: %d\n", x, y, xo, yo);
+    //printf("Calculated size_x: %d, size_y: %d\n", size_x, size_y);
 
 	for (i = 0; i < size_y; i++)
 	{
@@ -144,22 +142,11 @@ void rescale_image(void *mlx, void *win, void *original_img, int original_width,
 }
 
 float correctFisheye(float distance, float ra, float playerAngle) {
-    // Ajouter des logs pour vérifier les valeurs en entrée
-    //printf("Input Distance: %f\n", distance);
-    //printf("Input Ray Angle: %f\n", ra);
-    //printf("Input Player Angle: %f\n", playerAngle);
-
     float ca = playerAngle - ra;
     if (ca < 0) ca += 2 * PI;
     if (ca > 2 * PI) ca -= 2 * PI;
-    float correctedDistance = distance * cos(ca);
-
-    // Ajouter un log pour vérifier la valeur corrigée
-    //printf("Corrected Distance: %f\n", correctedDistance);
-
-    return correctedDistance;
+    return distance * cos(ca);
 }
-
 
 void calculateVerticalRay(t_structure_main *w, float ra, float *disV, float *vx, float *vy, WallDirection *wallDir) {
     int dof = 0, mx, my, mp;
@@ -377,12 +364,14 @@ int getTextureColor(t_structure_main *w, WallDirection wallDir, int textureX, in
     return color;
 }
 
-static void draw_texture(t_structure_main *w, int startX, int endX, int lineOff, int lineH, WallDirection wallDir, float rx, float ry) {
+static void draw_texture(t_structure_main *w, int startX, int endX, int lineOff, int lineH, WallDirection wallDir, float rx, float ry, float disT) {
     int textureWidth = w->s_img.texture_width;
     int textureHeight = w->s_img.texture_height;
 
     for (int y = lineOff; y < lineOff + lineH; y++) {
-        int textureY = ((float)(y - lineOff) / lineH) * textureHeight; // Ajustement de la texture Y
+        // La variable perspectiveFactor permet de mapper la texture en tenant compte de la perspective
+        float perspectiveFactor = (float)(y - lineOff) / lineH;
+        int textureY = perspectiveFactor * textureHeight;
         if (textureY >= textureHeight) {
             textureY = textureHeight - 1;
         }
@@ -392,11 +381,13 @@ static void draw_texture(t_structure_main *w, int startX, int endX, int lineOff,
             switch (wallDir) {
                 case NORTH:
                 case SOUTH:
-                    textureX = (int)(rx * textureWidth) % textureWidth;
+                    // Assurez-vous que rx est normalisé correctement pour le mappage de texture
+                    textureX = (int)(rx * textureWidth / w->s_map.mapS) % textureWidth;
                     break;
                 case WEST:
                 case EAST:
-                    textureX = (int)(ry * textureWidth) % textureWidth;
+                    // Assurez-vous que ry est normalisé correctement pour le mappage de texture
+                    textureX = (int)(ry * textureWidth / w->s_map.mapS) % textureWidth;
                     break;
             }
             if (textureX >= textureWidth) {
@@ -407,6 +398,8 @@ static void draw_texture(t_structure_main *w, int startX, int endX, int lineOff,
         }
     }
 }
+
+
 
 
 void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDirection wallDir, int numRays, int color) {
@@ -422,7 +415,7 @@ void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDir
     float lineH = (tileSize * max3DHeight) / disT;
     lineH = lineH > max3DHeight ? max3DHeight : lineH;
      float lineOff = ((max3DHeight - lineH) / 2);
-	//printf("drawRay - r: %d, rx: %f, ry: %f, disT: %f, wallDir: %d, numRays: %d\n", r, rx, ry, disT, wallDir, numRays);
+	printf("drawRay - rx: %f, ry: %f\n", rx, ry);
 
 
     // Décalage horizontal de l'arrière-plan
@@ -442,19 +435,13 @@ void drawRay(t_structure_main *w, int r, float rx, float ry, float disT, WallDir
 
     // Ajouter des instructions de débogage pour afficher les valeurs de startX et endX
     //printf("Ray %d - startX: %d, endX: %d\n", r, startX, endX);
-
+	printf("drawRay - rx: %f, ry: %f\n", rx, ry);
     // Dessiner le rayon
     draw_line(w, (int)w->s_player.px, (int)w->s_player.py, (int)rx + backgroundOffsetX, (int)ry, color);
 
     // Dessiner la texture ajustée pour le décalage
-    draw_texture(w, startX, endX, lineOff, lineH, wallDir, rx + backgroundOffsetX, ry);
+    draw_texture(w, startX, endX, lineOff, lineH, wallDir, rx + backgroundOffsetX, ry, disT);
 }
-
-
-
-
-
-
 
 void drawRays2D(t_structure_main *w) {
     int r, color;
@@ -462,7 +449,7 @@ void drawRays2D(t_structure_main *w) {
     WallDirection hWallDir, vWallDir;
     int tileSize = w->s_map.mapS;
     int numRays = 1280;
-    float FOV = 80 * (PI / 180);
+    float FOV = 60 * (PI / 180);
     float DR = FOV / numRays;
 
     // Ajouter des logs pour vérifier les valeurs
@@ -484,6 +471,7 @@ void drawRays2D(t_structure_main *w) {
         WallDirection wallDir = (disH < disV) ? hWallDir : vWallDir;
 
         disT = correctFisheye(disT, ra, w->s_player.pa);
+
 
         // Ajouter des logs pour déboguer
         //printf("Ray ID: %d\n", r);
@@ -527,16 +515,13 @@ void draw_map(t_structure_main *w) {
 
 		switch (w->s_map.map[index]) {
     	case '1':
-        // Couleur grise avec une transparence de 30%
-        color = (int)(0.5 * 255) << 24 | 0xAAAAAA;
+        color = 0xFFFFFF;
         break;
     	case '0':
-        // Couleur noire avec une transparence de 30%
-        color = (int)(0.0 * 255) << 24 | 0x000000;
+        color = 0x000000;
         break;
     	default:
-        // Couleur par défaut avec une transparence de 30%
-        color = (int)(0.0 * 255) << 24 | 0x000000;
+        color = 0x000000;
         break;
 }
 
@@ -555,8 +540,9 @@ void test2(t_structure_main *w) {
     mlx_destroy_image(w->s_win.mlx, w->s_img.buffer);
     w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.width, w->s_win.height);
     w->s_img.addr = mlx_get_data_addr(w->s_img.buffer, &(w->s_img.bpp), &(w->s_img.line_len), &(w->s_img.endian));
-    drawRays2D(w);
-	draw_map(w);
+    draw_map(w);
+	drawRays2D(w);
+
 	//drawRays2D(w);
 
     mlx_put_image_to_window(w->s_win.mlx, w->s_win.win, w->s_img.buffer, 0, 0);
