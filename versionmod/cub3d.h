@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/15 22:13:17 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:50:38 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 # include <stdbool.h>
 # include <assert.h>
 # include "include/mlx.h"
-# include "libft/libft.h"
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 100000
@@ -39,8 +38,7 @@
 # define WIDTH 1780
 # define HEIGHT 720
 # define BOV 500
-# define MAX_LINE_LENGTH 1024
-
+# define MAX_LINE_LENGTH 100000
 typedef enum {
 	NORTH,
 	SOUTH,
@@ -118,6 +116,15 @@ typedef struct s_struture_windows
 	int		width;
 }	t_structure_windows;
 
+typedef struct s_texture
+{
+    char			*north;
+    char			*south;
+    char			*west;
+    char			*east;
+    unsigned int	floor_color;
+    unsigned int	ceil_color;
+}   t_texture;
 typedef struct s_structure_main
 {
 	int					fd;
@@ -128,6 +135,7 @@ typedef struct s_structure_main
 	t_structure_img		s_img;
 	t_structure_map		s_map;
 	t_structure_player	s_player;
+	t_texture			*t;
 }	t_structure_main;
 
 typedef struct s_res_params {
@@ -325,16 +333,6 @@ typedef struct {
     t_state				state;
 } t_global_struct;
 
-typedef struct s_texture
-{
-    char			*north;
-    char			*south;
-    char			*west;
-    char			*east;
-    unsigned int	floor_color;
-    unsigned int	ceil_color;
-}   t_texture;
-
 //ft_utils_split.c 5 / 5
 char	**ft_split(char const *s, char c);
 //ft_utils_gnl.c 4 / 5
@@ -347,6 +345,10 @@ size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *src);
 char	*ft_strjoin(char *left_str, char *buff);
 char	*ft_strchr(const char *s, int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(const char *s1, const char *s2);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+void	*ft_memset(void *s, int c, size_t n);
 /*collision*/
 void	calculate_future_position(t_position_params *params);
 int		check_collision(t_structure_main *w, int future_px, int future_py);
@@ -354,9 +356,8 @@ void	calculate_future_position_right_left(t_position_params *params);
 //ft_utils_convert.c 1/5
 char	*ft_itoa(int nb);
 /*parsing*/
-char	*read_map(const char* filename, int* length);
 int		is_map_closed(char* map, int width, int height);
-bool parse_map(const char *map_content, int length, t_structure_map *map_info);
+bool	parse_map(const char *map_content, int length, t_structure_map *map_info);
 int		check_borders(char *map, int maxWidth, int height);
 int		check_interior(char *map, int maxWidth, int height);
 void	exit_error(t_structure_main *w);
@@ -366,6 +367,11 @@ void	get_map_dimensions(t_map_params *params);
 void	fill_map_space(t_structure_map *map_info, int maxWidth, int height);
 void	copy_map_data(t_map_params *params);
 bool	load_cub_file(const char *filename, t_texture *textures, t_structure_map *map_info);
+bool	parse_texture_line(const char *line, t_texture *textures);
+bool	handle_map(int fd, char **map_buffer, int *map_length);
+bool	parse_color_line(const char *line, unsigned int *color);
+bool	is_valid_texture(const char *line);
+bool	handle_textures(int fd, t_texture *textures);
 /*textures*/
 void	load_wall_textures(t_structure_main *w);
 void	draw_texture(t_texture_params *tex_params);

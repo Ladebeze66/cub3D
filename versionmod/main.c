@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/15 21:40:38 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 17:55:57 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ int	setup_and_load_map(int argc, char **argv, t_structure_main *w)
 		fprintf(stderr, "Usage: %s\n", argv[0]);
 		return (0);
 	}
-	load_cub_file("map.cub", &textures, &w->s_map);
 	if (!load_cub_file("map.cub", &textures, &w->s_map))
 	{
 		printf("Failed to load the map or map is not closed. Exiting...\n");
@@ -39,11 +38,18 @@ int	main(int argc, char **argv)
 	t_structure_main	w;
 	t_global_struct		global_struct;
 
+	w.t = malloc(sizeof(t_texture));
+	if (w.t == NULL)
+	{
+    // Gérer l'erreur d'allocation
+	}
+	ft_memset(w.t, 0, sizeof(t_texture));
 	global_struct.w = &w;
 	global_struct.state.jkl = -1;
 	global_struct.state.yui = 0;
 	if (!setup_and_load_map(argc, argv, &w))
 		return (1);
+	load_wall_textures(&w);
 	init_windows(&w);
 	mlx_loop_hook(w.s_win.mlx, (void *)sleep_mouse, &global_struct);
 	mlx_hook(w.s_win.win, 2, 1L << 0, deal_key, &w);

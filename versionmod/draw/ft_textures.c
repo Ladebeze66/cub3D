@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:39:11 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 21:26:16 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:55:50 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ void	draw_texture(t_texture_params *params)
 void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 {
 	if (wallDir == NORTH)
-		return (w->s_img.north_texture);
+		return (w->t->north);
 	else if (wallDir == SOUTH)
-		return (w->s_img.south_texture);
+		return (w->t->south);
 	else if (wallDir == WEST)
-		return (w->s_img.west_texture);
+		return (w->t->west);
 	else if (wallDir == EAST)
-		return (w->s_img.east_texture);
+		return (w->t->east);
 	else
 	{
 		fprintf(stderr, "Invalid wall direction.\n");

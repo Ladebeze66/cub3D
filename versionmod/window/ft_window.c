@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 20:15:35 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 17:55:37 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,7 @@ void	init_windows(t_structure_main *w)
 	w->s_win.height = HEIGHT;
 	init_player(w);
 	init_mlx_and_window(w);
-	load_textures(w, &temp);
 	init_buffer(w);
-	load_wall_textures(w);
 	printf("Window Dimensions: Width = %d, Height = %d\n",
 		w->s_win.width, w->s_win.height);
 	printf("Texture Dimensions: Width = %d, Height = %d\n",
