@@ -6,21 +6,20 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 17:55:57 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/17 21:22:18 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int	setup_and_load_map(int argc, char **argv, t_structure_main *w)
+int	setup_and_load_map(int argc, char **argv, t_structure_main *w, t_texture *textures)
 {
-	t_texture	textures;
 	if (argc > 2)
 	{
 		fprintf(stderr, "Usage: %s\n", argv[0]);
 		return (0);
 	}
-	if (!load_cub_file("map.cub", &textures, &w->s_map))
+	if (!load_cub_file("map.cub", textures, &w->s_map))
 	{
 		printf("Failed to load the map or map is not closed. Exiting...\n");
 		return (0);
@@ -30,6 +29,10 @@ int	setup_and_load_map(int argc, char **argv, t_structure_main *w)
 		printf("Failed to load the map.\n");
 		return (0);
 	}
+	printf("set_up_andloadmap %s\n", textures->north);
+	printf("set_up_andloadmap %s\n", textures->south);
+	printf("set_up_andloadmap %s\n", textures->east);
+	printf("set_up_andloadmap %s\n", textures->west);
 	return (1);
 }
 
@@ -47,9 +50,12 @@ int	main(int argc, char **argv)
 	global_struct.w = &w;
 	global_struct.state.jkl = -1;
 	global_struct.state.yui = 0;
-	if (!setup_and_load_map(argc, argv, &w))
+	if (!setup_and_load_map(argc, argv, &w, w.t))
 		return (1);
-	load_wall_textures(&w);
+	printf("main textures %s\n", w.t->north);
+	printf("main textures %s\n", w.t->south);
+	printf("main textures %s\n", w.t->east);
+	printf("main textures %s\n", w.t->west);
 	init_windows(&w);
 	mlx_loop_hook(w.s_win.mlx, (void *)sleep_mouse, &global_struct);
 	mlx_hook(w.s_win.win, 2, 1L << 0, deal_key, &w);

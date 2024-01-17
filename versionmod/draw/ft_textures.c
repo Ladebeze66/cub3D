@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:39:11 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 16:55:50 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/17 21:38:40 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	draw_texture_line(t_texture_params *params, float y, int textureY)
 		put_pixel_img(params->w, x, y, color);
 		x++;
 	}
+	 printf("draw_texture_line: texturex = %d, textureY = %d, color = %d\n", texturex, textureY, color);
 }
 
 void	draw_texture(t_texture_params *params)
@@ -55,11 +56,13 @@ void	draw_texture(t_texture_params *params)
 			texturey = textureheight - 1;
 		draw_texture_line(params, y, texturey);
 		y++;
-	}
+	}printf("draw_texture: y = %f, texturey = %d\n", y, texturey);
+
 }
 
 void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 {
+	void *texture = NULL;
 	if (wallDir == NORTH)
 		return (w->t->north);
 	else if (wallDir == SOUTH)
@@ -74,6 +77,11 @@ void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 		exit_error(w);
 		return (NULL);
 	}
+	 if (texture == NULL) {
+        fprintf(stderr, "get_selected_texture: selected texture is NULL\n");
+    } else {
+        printf("get_selected_texture: selected texture = %p\n", texture);
+    }
 }
 
 t_texture_data	get_texture_data(void *texture)
@@ -82,6 +90,7 @@ t_texture_data	get_texture_data(void *texture)
 
 	texture_data.data = mlx_get_data_addr(texture, &texture_data.bpp,
 			&texture_data.size_line, &texture_data.endian);
+	printf("get_texture_data: bpp = %d, size_line = %d, endian = %d\n", texture_data.bpp, texture_data.size_line, texture_data.endian);
 	return (texture_data);
 }
 
@@ -97,8 +106,10 @@ int	get_texture_color(t_structure_main *w, WallDirection wallDir,
 	{
 		return (0);
 	}
+
 	texture_data = get_texture_data(selected_texture);
 	pixel_pos = (textureX + textureY * w->s_img.texture_width)
 		* (texture_data.bpp / 8);
+		printf("get_texture_color: textureX = %d, textureY = %d, pixel_pos = %d\n", textureX, textureY, pixel_pos);
 	return (*(int *)(texture_data.data + pixel_pos));
 }
