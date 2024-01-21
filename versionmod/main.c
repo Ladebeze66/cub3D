@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:22:18 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 19:40:29 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,24 @@ int	setup_and_load_map(int argc, char **argv, t_structure_main *w, t_texture *te
 		printf("Failed to load the map.\n");
 		return (0);
 	}
-	printf("set_up_andloadmap %s\n", textures->north);
-	printf("set_up_andloadmap %s\n", textures->south);
-	printf("set_up_andloadmap %s\n", textures->east);
-	printf("set_up_andloadmap %s\n", textures->west);
 	return (1);
+}
+
+void init_structure_main(t_structure_main *w)
+{
+	if (w == NULL)
+	{
+		return ;
+	}
+	w->t = (t_texture *)malloc(sizeof(t_texture));
+	if (w->t != NULL)
+	{
+		ft_memset(w->t, 0, sizeof(t_texture));
+	}
+	ft_memset(&(w->s_win), 0, sizeof(t_structure_windows));
+	ft_memset(&(w->s_img), 0, sizeof(t_structure_img));
+	ft_memset(&(w->s_map), 0, sizeof(t_structure_map));
+	ft_memset(&(w->s_player), 0, sizeof(t_structure_player));
 }
 
 int	main(int argc, char **argv)
@@ -41,21 +54,12 @@ int	main(int argc, char **argv)
 	t_structure_main	w;
 	t_global_struct		global_struct;
 
-	w.t = malloc(sizeof(t_texture));
-	if (w.t == NULL)
-	{
-    // Gérer l'erreur d'allocation
-	}
-	ft_memset(w.t, 0, sizeof(t_texture));
+	init_structure_main(&w);
 	global_struct.w = &w;
 	global_struct.state.jkl = -1;
 	global_struct.state.yui = 0;
 	if (!setup_and_load_map(argc, argv, &w, w.t))
 		return (1);
-	printf("main textures %s\n", w.t->north);
-	printf("main textures %s\n", w.t->south);
-	printf("main textures %s\n", w.t->east);
-	printf("main textures %s\n", w.t->west);
 	init_windows(&w);
 	mlx_loop_hook(w.s_win.mlx, (void *)sleep_mouse, &global_struct);
 	mlx_hook(w.s_win.win, 2, 1L << 0, deal_key, &w);
@@ -64,6 +68,10 @@ int	main(int argc, char **argv)
 	if (w.s_map.map)
 	{
 		free(w.s_map.map);
+	}
+	if (w.t)
+	{
+		free(w.t);
 	}
 	return (0);
 }

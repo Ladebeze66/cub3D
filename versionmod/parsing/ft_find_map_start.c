@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 20:04:23 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 17:47:49 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 11:54:07 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ bool	handle_colors(int fd, t_texture *textures)
 		{
 			line[i] = '\0';
 			printf("Ligne lue pour les couleurs: '%s'\n", line);
-			if (process_color_line(line, textures))
+			if ((line[0] == 'F' || line[0] == 'C') && process_color_line(line, textures))
 				color_count++;
 			i = 0;
 		}
@@ -100,9 +100,5 @@ bool	load_cub_file(const char *filename,
 		printf("No map data found in file.\n");
 		result = false;
 	}
-	printf("loadcubfile %s\n", textures->north);
-	printf("loadcubfile %s\n", textures->south);
-	printf("loadcubfile %s\n", textures->east);
-	printf("loadcubfile %s\n", textures->west);
 	return (cleanup_and_close(fd, map_buffer, result));
 }

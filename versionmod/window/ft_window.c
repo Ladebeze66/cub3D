@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:26:12 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 14:08:12 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,19 +71,6 @@ void	init_buffer(t_structure_main *w)
 			w->s_win.width, w->s_win.height);
 }
 
-void	calculate_map_scale(t_structure_main *w)
-{
-	int	maps_x;
-	int	maps_y;
-
-	maps_x = w->s_win.width / (w->s_map.mapX * 4);
-	maps_y = w->s_win.height / (w->s_map.mapY * 2);
-	if (maps_x < maps_y)
-		w->s_map.mapS = maps_x;
-	else
-		w->s_map.mapS = maps_y;
-}
-
 void	init_windows(t_structure_main *w)
 {
 	int	temp;
@@ -92,6 +79,10 @@ void	init_windows(t_structure_main *w)
 	w->s_win.height = HEIGHT;
 	init_player(w);
 	init_mlx_and_window(w);
+	w->s_img.north_texture = NULL;
+	w->s_img.south_texture = NULL;
+	w->s_img.west_texture = NULL;
+	w->s_img.east_texture = NULL;
 	load_textures(w, &temp);
 	init_buffer(w);
 	load_wall_textures(w);
@@ -102,5 +93,4 @@ void	init_windows(t_structure_main *w)
 	gettimeofday(&(w->start_time), NULL);
 	w->end_time = w->start_time;
 	w->frame_count = 0;
-	calculate_map_scale(w);
 }

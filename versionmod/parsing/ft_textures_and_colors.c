@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 16:19:13 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 17:31:12 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/20 11:15:41 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ bool	parse_texture_line(const char *line, t_texture *textures)
 		textures->west = ft_strdup(path);
 	else if (ft_strcmp(direction, "EA") == 0)
 		textures->east = ft_strdup(path);
-		printf("parse texture %s\n", textures->north);
 	return (true);
 }
 
@@ -66,25 +65,41 @@ bool	handle_map(int fd, char **map_buffer, int *map_length)
 	return (true);
 }
 
+bool parse_number_from_str(const char **str, int *number)
+{
+	*number = 0;
+	while (**str >= '0' && **str <= '9')
+	{
+		*number = *number * 10 + (**str - '0');
+		(*str)++;
+	}
+	if (**str != ',' && **str != ' ' && **str != '\0')
+	{
+		return (false);
+	}
+	return (true);
+}
+
 bool	parse_color_line(const char *line, unsigned int *color)
 {
-	int	r;
+	int r;
 	int	g;
 	int	b;
-	int	i;
+	const char *ptr;
 
 	r = 0;
 	g = 0;
 	b = 0;
-	i = 0;
-	while (line[i] != ',' && line[i] != '\0')
-		r = r * 10 + (line[i++] - '0');
-	i++;
-	while (line[i] != ',' && line[i] != '\0')
-		g = g * 10 + (line[i++] - '0');
-	i++;
-	while (line[i] != ' ' && line[i] != '\0')
-		b = b * 10 + (line[i++] - '0');
+	ptr = line;
+	while (*ptr == ' ') ptr++;
+	if (!parse_number_from_str(&ptr, &r) || *ptr++ != ',')
+		return (false);
+	while (*ptr == ' ') ptr++;
+	if (!parse_number_from_str(&ptr, &g) || *ptr++ != ',')
+		return (false);
+	while (*ptr == ' ') ptr++;
+	if (!parse_number_from_str(&ptr, &b))
+		return (false);
 	*color = (r << 16) | (g << 8) | b;
 	return (true);
 }

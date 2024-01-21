@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 16:50:38 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 21:40:53 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define P2 PI/2
 # define P3 3*PI/2
 # define COLBUF 2
-# define NUMRAY 1280
+# define NUMRAY 10
 # define FOVIEW 60
 # define DISRAY 1000000
 # define DOF 120
@@ -39,6 +39,7 @@
 # define HEIGHT 720
 # define BOV 500
 # define MAX_LINE_LENGTH 100000
+
 typedef enum {
 	NORTH,
 	SOUTH,
@@ -59,17 +60,29 @@ typedef struct s_img
 	int		endian;
 }				t_img;
 
+typedef struct s_struture_windows
+{
+	void	*mlx;
+	void	*win;
+	int		height;
+	int		width;
+}	t_structure_windows;
+
 typedef struct s_struture_map
 {
-	char	*map;
-	char	*buff;
-	char	**temp_list;
-	int		i;
-	int		j;
-	int		temp;
-	int		mapX;
-	int		mapY;
-	int		mapS;
+	char		*map;
+	char		*buff;
+	char		**temp_list;
+	int			i;
+	int			j;
+	int			temp;
+	int			mapX;
+	int			mapY;
+	int			mapS;
+	float		player_x;
+	float		player_y;
+	char		player_direction;
+	t_structure_windows	wd;
 }	t_structure_map;
 
 typedef struct s_struture_player
@@ -108,14 +121,6 @@ typedef struct s_struture_img
 	int		texture_height;
 }	t_structure_img;
 
-typedef struct s_struture_windows
-{
-	void	*mlx;
-	void	*win;
-	int		height;
-	int		width;
-}	t_structure_windows;
-
 typedef struct s_texture
 {
     char			*north;
@@ -125,6 +130,17 @@ typedef struct s_texture
     unsigned int	floor_color;
     unsigned int	ceil_color;
 }   t_texture;
+
+typedef struct s_map_params {
+	t_structure_map	*map_info;
+	const char		*buffer;
+	int				length;
+	int				*maxWidth;
+	int				*height;
+	int				*currentWidth;
+	int				*isNewLine;
+} t_map_params;
+
 typedef struct s_structure_main
 {
 	int					fd;
@@ -172,17 +188,6 @@ typedef struct s_position_params {
 	double	pa;
 	char	direction;
 } t_position_params;
-
-
-typedef struct s_map_params {
-	t_structure_map	*map_info;
-	const char		*buffer;
-	int				length;
-	int				*maxWidth;
-	int				*height;
-	int				*currentWidth;
-	int				*isNewLine;
-} t_map_params;
 
 typedef struct s_square_params {
 	t_structure_main	*w;
@@ -339,7 +344,7 @@ char	**ft_split(char const *s, char c);
 char	*get_next_line(int fd);
 /*ft_key.c 3/5*/
 int		*kill_prog(t_structure_main *w);
-void	move(int key, t_structure_main *w);
+void	move(t_structure_main *w, int key);
 int		deal_key(int key, t_structure_main *w);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *src);

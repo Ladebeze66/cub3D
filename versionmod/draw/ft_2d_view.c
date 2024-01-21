@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:49:42 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:47:17 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 21:17:37 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	init_base_params(t_base_params *params, t_structure_main *w)
 	params->FOV = FOVIEW * (PI / 180);
 	params->DR = params->FOV / params->numrays;
 	params->ra = w->s_player.pa - (params->FOV / 2);
+	//printf("initbaseparams: %d , %f\n", params->tilesize, params->ra);
 	draw_background(w);
 }
 
@@ -62,27 +63,37 @@ void	calculate_ray(t_base_params *base, t_ray_state *state,
 	rayparams->color = calc->color;
 }
 
-void	drawrays2d(t_structure_main *w)
-{
-	t_drawrays2d_params	params;
+void drawrays2d(t_structure_main *w) {
+    t_drawrays2d_params params;
 
-	init_base_params(&params.base_params, w);
-	params.ray_calc.w = w;
-	params.ray_calc.r = 0;
-	while (params.ray_calc.r++ < params.base_params.numrays)
-	{
-		params.base_params.ra = fmod(params.base_params.ra + 2 * PI, 2 * PI);
-		params.hrayparams = (t_ray_calc_params){w, params.base_params.ra,
-			&params.ray_state.disH, &params.ray_state.hx,
-			&params.ray_state.hy, &params.ray_state.hwalldir};
-		params.vrayparams = (t_ray_calc_params){w, params.base_params.ra,
-			&params.ray_state.disV, &params.ray_state.vx,
-			&params.ray_state.vy, &params.ray_state.vwalldir};
-		calculatehorizontalray(&params.hrayparams);
-		calculateverticalray(&params.vrayparams);
-		calculate_ray(&params.base_params, &params.ray_state,
-			&params.ray_calc, &params.rayparams);
-		drawray(&params.rayparams);
-		params.base_params.ra += params.base_params.DR;
-	}
+    init_base_params(&params.base_params, w);
+    params.ray_calc.w = w;
+    params.ray_calc.r = 0;
+    while (params.ray_calc.r++ < params.base_params.numrays) {
+        params.base_params.ra = fmod(params.base_params.ra + 2 * PI, 2 * PI);
+
+        // Ajout de logs pour les paramètres du rayon
+        printf("drawrays2d BEFORE: Ray #%d, Angle (ra) = %f\n", params.ray_calc.r, params.base_params.ra);
+
+        params.hrayparams = (t_ray_calc_params){w, params.base_params.ra,
+            &params.ray_state.disH, &params.ray_state.hx,
+            &params.ray_state.hy, &params.ray_state.hwalldir};
+        params.vrayparams = (t_ray_calc_params){w, params.base_params.ra,
+            &params.ray_state.disV, &params.ray_state.vx,
+            &params.ray_state.vy, &params.ray_state.vwalldir};
+        calculatehorizontalray(&params.hrayparams);
+        calculateverticalray(&params.vrayparams);
+        calculate_ray(&params.base_params, &params.ray_state,
+            &params.ray_calc, &params.rayparams);
+			printf("drawrays2d AFTER : Ray #%d, ra: %f\n", params.ray_calc.r, params.base_params.ra);
+
+        //Plus de logs après les calculs des rayons
+		//printf("drawrays2d: Ray #%d, Player Position: x = %f, y = %f, Angle (ra) = %f\n",
+        //       params.ray_calc.r, w->s_player.px, w->s_player.py, params.base_params.ra);
+        //printf("Horizontal Ray: Distance = %f, x = %f, y = %f\n", params.ray_state.disH, params.ray_state.hx, params.ray_state.hy);
+        //printf("Vertical Ray: Distance = %f, x = %f, y = %f\n", params.ray_state.disV, params.ray_state.vx, params.ray_state.vy);
+
+        drawray(&params.rayparams);
+        params.base_params.ra += params.base_params.DR;
+    }
 }

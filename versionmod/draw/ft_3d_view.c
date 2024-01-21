@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:35:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 17:19:42 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/21 19:55:50 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	init_line_params(t_line_params *lineparams, t_ray_params *rayParams)
 	lineparams->x1 = (int)rayParams->rx;
 	lineparams->y1 = (int)rayParams->ry;
 	lineparams->color = rayParams->color;
+	//printf("init_line_params: Player Position: x0 = %d, y0 = %d\n", lineparams->x0, lineparams->y0);
+    //printf("init_line_params: Ray End Position: x1 = %d, y1 = %d\n", lineparams->x1, lineparams->y1);
 }
 
 void	init_texture_params(t_texture_params *textureparams,
@@ -54,6 +56,10 @@ void	drawray(t_ray_params *rayparams)
 	textureparams.startX = rayparams->r * rayparams->raywidth
 		+ rayparams->backgroundOffsetX;
 	textureparams.endX = textureparams.startX + rayparams->raywidth;
+	//printf("drawray: Player Position: x = %f, y = %f\n", rayparams->w->s_player.px, rayparams->w->s_player.py);
+    //printf("drawray: Ray Angle: pa = %f\n", rayparams->w->s_player.pa);
+    //printf("drawray: Ray Distance: disT = %f\n", rayparams->disT);
+    //printf("drawray: Ray Height: lineH = %f\n", rayparams->lineH);
 	init_line_params(&lineparams, rayparams);
 	draw_line(&lineparams);
 	init_texture_params(&textureparams, rayparams);
