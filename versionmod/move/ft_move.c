@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:08:25 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/21 21:09:26 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/22 16:10:32 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void move_forward(t_structure_main *w, int key)
         w->s_player.px += w->s_player.pdx;
         w->s_player.py += w->s_player.pdy;
     }
+	//printf("move %d, pa %f\n", key, w->s_player.pa);
     printf("move_forward: After move - px: %f, py: %f\n", w->s_player.px, w->s_player.py);
 }
 
@@ -61,6 +62,7 @@ void move_backward(t_structure_main *w, int key)
         w->s_player.px -= w->s_player.pdx;
         w->s_player.py -= w->s_player.pdy;
     }
+	//printf("move %d, pa %f\n", key, w->s_player.pa);
     printf("Move Backward: Player position after moving backward: x = %f, y = %f\n", w->s_player.px, w->s_player.py);
 }
 
@@ -87,6 +89,7 @@ void move_right(t_structure_main *w, int key)
         w->s_player.px = future_px;
         w->s_player.py = future_py;
     }
+	//printf("move %d, pa %f\n", key, w->s_player.pa);
     printf("Move Backward: Player position after moving backward: x = %f, y = %f\n", w->s_player.px, w->s_player.py);
 }
 
@@ -113,6 +116,7 @@ void move_left(t_structure_main *w, int key)
         w->s_player.px = future_px;
         w->s_player.py = future_py;
     }
+	//printf("move %d, pa %f\n", key, w->s_player.pa);
     printf("Move Backward: Player position after moving backward: x = %f, y = %f\n", w->s_player.px, w->s_player.py);
 }
 

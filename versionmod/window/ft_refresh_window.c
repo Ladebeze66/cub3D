@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 19:50:24 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/21 21:10:56 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/22 15:41:55 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,23 +29,23 @@ void rescale_sprite(t_structure_main *w, t_state *state) {
 
 void	refresh_window(t_structure_main *w, t_state *state)
 {
-	printf("refresh_window: Destroying old image\n");
+	//printf("refresh_window: Destroying old image\n");
 	mlx_destroy_image(w->s_win.mlx, w->s_img.buffer);
 	//printf("refresh_window: Creating new image\n");
 	w->s_img.buffer = mlx_new_image(w->s_win.mlx, w->s_win.width,
 			w->s_win.height);
-	//printf("refresh_window: Getting data address\n");
+	printf("refresh_window: Getting data address\n");
 	w->s_img.addr = mlx_get_data_addr(w->s_img.buffer,
 			&(w->s_img.bpp), &(w->s_img.line_len), &(w->s_img.endian));
-	//printf("refresh_window: Drawing map\n");
+	printf("refresh_window: Drawing map\n");
 	draw_map(w);
-	//printf("refresh_window: Drawing rays 2D\n");
+	printf("refresh_window: Drawing rays 2D\n");
 	drawrays2d(w);
 	//printf("refresh_window: Putting image to window\n");
 	mlx_put_image_to_window(w->s_win.mlx, w->s_win.win, w->s_img.buffer, 0, 0);
 	//printf("refresh_window: Rescaling sprite\n");
 	rescale_sprite(w, state);
-	printf("refresh_window: Window refreshed\n");
+	//printf("refresh_window: Window refreshed\n");
 }
 
 void	handle_mouse_movement(t_structure_main *w)
