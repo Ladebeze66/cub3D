@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 23:09:44 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:50:38 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define WIDTH 1780
 # define HEIGHT 720
 # define BOV 500
-
+# define MAX_LINE_LENGTH 100000
 typedef enum {
 	NORTH,
 	SOUTH,
@@ -116,6 +116,15 @@ typedef struct s_struture_windows
 	int		width;
 }	t_structure_windows;
 
+typedef struct s_texture
+{
+    char			*north;
+    char			*south;
+    char			*west;
+    char			*east;
+    unsigned int	floor_color;
+    unsigned int	ceil_color;
+}   t_texture;
 typedef struct s_structure_main
 {
 	int					fd;
@@ -126,6 +135,7 @@ typedef struct s_structure_main
 	t_structure_img		s_img;
 	t_structure_map		s_map;
 	t_structure_player	s_player;
+	t_texture			*t;
 }	t_structure_main;
 
 typedef struct s_res_params {
@@ -259,19 +269,86 @@ typedef struct s_texture_data
 	int		endian;
 }	t_texture_data;
 
+typedef struct s_init_params {
+	t_structure_main	*w;
+	int					tilesize;
+	int					numrays;
+	float				FOV;
+	float				DR;
+} t_init_params;
+
+typedef struct s_ray_properties {
+	float			disH;
+	float			disV;
+	WallDirection	hwalldir;
+	WallDirection	vwalldir;
+	float			hx;
+	float			hy;
+	float			vx;
+	float			vy;
+} t_ray_properties;
+
+typedef struct {
+	int		tilesize;
+	int		numrays;
+	float	FOV;
+	float	DR;
+	float	ra;
+} t_base_params;
+
+typedef struct {
+	float			disH;
+	float			disV;
+	float			disT;
+	float			hx;
+	float			hy;
+	float			vx;
+	float			vy;
+	WallDirection	hwalldir;
+	WallDirection	vwalldir;
+} t_ray_state;
+
+typedef struct {
+	t_structure_main	*w;
+	int					r;
+	int					color;
+} t_ray_calc;
+
+typedef struct {
+	t_base_params		base_params;
+	t_ray_state			ray_state;
+	t_ray_calc			ray_calc;
+	t_ray_params		rayparams;
+	t_ray_calc_params	hrayparams;
+	t_ray_calc_params	vrayparams;
+} t_drawrays2d_params;
+
+typedef struct {
+    int	jkl;
+    int	yui;
+} t_state;
+
+typedef struct {
+    t_structure_main	*w;
+    t_state				state;
+} t_global_struct;
+
 //ft_utils_split.c 5 / 5
 char	**ft_split(char const *s, char c);
 //ft_utils_gnl.c 4 / 5
 char	*get_next_line(int fd);
-//ft_utils_str_1.c
-size_t	ft_strlen(const char *s);
-char	*ft_strdup(const char *src);
-char	*ft_strjoin(char *left_str, char *buff);
-char	*ft_strchr(const char *s, int c);
 /*ft_key.c 3/5*/
 int		*kill_prog(t_structure_main *w);
 void	move(int key, t_structure_main *w);
 int		deal_key(int key, t_structure_main *w);
+size_t	ft_strlen(const char *s);
+char	*ft_strdup(const char *src);
+char	*ft_strjoin(char *left_str, char *buff);
+char	*ft_strchr(const char *s, int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(const char *s1, const char *s2);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+void	*ft_memset(void *s, int c, size_t n);
 /*collision*/
 void	calculate_future_position(t_position_params *params);
 int		check_collision(t_structure_main *w, int future_px, int future_py);
@@ -279,9 +356,8 @@ void	calculate_future_position_right_left(t_position_params *params);
 //ft_utils_convert.c 1/5
 char	*ft_itoa(int nb);
 /*parsing*/
-char	*read_map(const char* filename, int* length);
 int		is_map_closed(char* map, int width, int height);
-bool	parse_map(const char* filename, t_structure_map *map_info);
+bool	parse_map(const char *map_content, int length, t_structure_map *map_info);
 int		check_borders(char *map, int maxWidth, int height);
 int		check_interior(char *map, int maxWidth, int height);
 void	exit_error(t_structure_main *w);
@@ -290,6 +366,12 @@ void	process_character(t_map_params *params, int *i);
 void	get_map_dimensions(t_map_params *params);
 void	fill_map_space(t_structure_map *map_info, int maxWidth, int height);
 void	copy_map_data(t_map_params *params);
+bool	load_cub_file(const char *filename, t_texture *textures, t_structure_map *map_info);
+bool	parse_texture_line(const char *line, t_texture *textures);
+bool	handle_map(int fd, char **map_buffer, int *map_length);
+bool	parse_color_line(const char *line, unsigned int *color);
+bool	is_valid_texture(const char *line);
+bool	handle_textures(int fd, t_texture *textures);
 /*textures*/
 void	load_wall_textures(t_structure_main *w);
 void	draw_texture(t_texture_params *tex_params);
@@ -305,7 +387,7 @@ void	draw_map(t_structure_main *w);
 void	put_pixel_img(t_structure_main *w, int x, int y, int color);
 void	draw_square_raw(t_square_params *params);
 void	draw_line(t_line_params *params);
-void	drawRays2D(t_structure_main *w);
+void	drawrays2d(t_structure_main *w);
 //Ray
 void	calculateverticalray(t_ray_calc_params *params);
 void	handle_ra_vertical(t_ray_calc_params *params, float nTan, int tileSize);
@@ -316,5 +398,6 @@ float	dist(float ax, float ay, float bx, float by);
 void	init_windows(t_structure_main *w);
 void	init_player(t_structure_main *w);
 void	init_mlx_and_window(t_structure_main *w);
+void	sleep_mouse(t_global_struct *global_struct);
 
 #endif

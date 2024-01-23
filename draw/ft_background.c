@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 23:19:39 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 17:37:52 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/20 11:18:10 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,13 @@ void	draw_background(t_structure_main *w)
 	sky_params.w = w;
 	sky_params.startHeight = 0;
 	sky_params.endHeight = w->s_win.height / 2;
-	sky_params.color = 0xB2FFFF;
+	sky_params.color = w->t->ceil_color;
 	sky_params.backgroundOffsetX = backgroundoffsetx;
 	draw_sky_ground(&sky_params);
 	ground_params.w = w;
 	ground_params.startHeight = w->s_win.height / 2;
 	ground_params.endHeight = w->s_win.height;
-	ground_params.color = 0x280000;
+	ground_params.color = w->t->floor_color;
 	ground_params.backgroundOffsetX = backgroundoffsetx;
 	draw_sky_ground(&ground_params);
 }

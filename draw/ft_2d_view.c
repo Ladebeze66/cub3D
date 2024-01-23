@@ -6,84 +6,89 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:49:42 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 23:34:45 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/17 21:47:17 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-void drawRays2D(t_structure_main *w)
+float	correctfisheye(float distance, float ra, float playerAngle)
 {
-	int					r;
-	int					color;
-	int					tilesize;
-	int					numrays;
-	float				ra;
-	float				disH;
-	float				disV;
-	float				disT;
-	float				hx;
-	float				hy;
-	float				vx;
-	float				vy;
-	float				FOV;
-	float 				DR;
-	WallDirection		hwalldir;
-	WallDirection		vwalldir;
-	t_ray_params		rayparams;
-	t_ray_calc_params	hrayparams;
-	t_ray_calc_params	vrayparams;
+	float	ca;
 
-	tilesize = w->s_map.mapS;
-	numrays = NUMRAY;
-	FOV = FOVIEW * (PI / 180);
-	DR = FOV / numrays;
+	ca = playerAngle - ra;
+	if (ca < 0)
+		ca += 2 * PI;
+	if (ca > 2 * PI)
+		ca -= 2 * PI;
+	return (distance * cos(ca));
+}
+
+void	init_base_params(t_base_params *params, t_structure_main *w)
+{
+	params->tilesize = w->s_map.mapS;
+	params->numrays = NUMRAY;
+	params->FOV = FOVIEW * (PI / 180);
+	params->DR = params->FOV / params->numrays;
+	params->ra = w->s_player.pa - (params->FOV / 2);
+	printf("DEBUG: Initialisation des paramètres de base\n");
+    printf("DEBUG: tilesize (taille de la tuile) = %d\n", w->s_map.mapS);
+    printf("DEBUG: numrays (nombre de rayons) = %d\n", NUMRAY);
+    printf("DEBUG: FOV (champ de vision) = %f\n", FOVIEW * (PI / 180));
+    printf("DEBUG: DR (delta rayon) = %f\n", params->FOV / params->numrays);
+    printf("DEBUG: ra (rayon actuel) = %f\n", w->s_player.pa - (params->FOV / 2));
 	draw_background(w);
+}
 
-	ra = w->s_player.pa - (FOV / 2);
-	r = 0;
-	while (r++ < numrays)
+void	calculate_ray(t_base_params *base, t_ray_state *state,
+		t_ray_calc *calc, t_ray_params *rayparams)
+{
+	if (state->disH < state->disV)
 	{
-		ra = fmod(ra + 2 * PI, 2 * PI);
+		rayparams->disT = state->disH;
+		calc->color = 0xFF0000;
+		rayparams->wallDir = state->hwalldir;
+		rayparams->rx = state->hx;
+		rayparams->ry = state->hy;
+	}
+	else
+	{
+		rayparams->disT = state->disV;
+		calc->color = 0x00FF00;
+		rayparams->wallDir = state->vwalldir;
+		rayparams->rx = state->vx;
+		rayparams->ry = state->vy;
+	}
+	rayparams->disT = correctfisheye(rayparams->disT,
+			base->ra, calc->w->s_player.pa);
+	rayparams->w = calc->w;
+	rayparams->tileSize = base->tilesize;
+	rayparams->r = calc->r;
+	rayparams->numRays = base->numrays;
+	rayparams->color = calc->color;
+}
 
-		hrayparams.w = w;
-		hrayparams.ra = ra;
-		hrayparams.disRay = &disH;
-		hrayparams.rx = &hx;
-		hrayparams.ry = &hy;
-		hrayparams.wallDir = &hwalldir;
-		calculatehorizontalray(&hrayparams);
-		vrayparams.w = w;
-		vrayparams.ra = ra;
-		vrayparams.disRay = &disV;
-		vrayparams.rx = &vx;
-		vrayparams.ry = &vy;
-		vrayparams.wallDir = &vwalldir;
-		calculateverticalray(&vrayparams);
-		if (disH < disV)
-		{
-			disT = disH;
-			color = 0xFF0000;
-			rayparams.wallDir = hwalldir;
-			rayparams.rx = hx;
-			rayparams.ry = hy;
-   		}
-		else
-		{
-			disT = disV;
-			color = 0x00FF00;
-			rayparams.wallDir = vwalldir;
-			rayparams.rx = vx;
-			rayparams.ry = vy;
-		}
-		disT = correctFisheye(disT, ra, w->s_player.pa);
-		rayparams.w = w;
-		rayparams.tileSize = tilesize;
-		rayparams.r = r;
-		rayparams.disT = disT;
-		rayparams.numRays = numrays;
-		rayparams.color = color;
-		drawray(&rayparams);
-		ra += DR;
+void	drawrays2d(t_structure_main *w)
+{
+	t_drawrays2d_params	params;
+
+	init_base_params(&params.base_params, w);
+	params.ray_calc.w = w;
+	params.ray_calc.r = 0;
+	while (params.ray_calc.r++ < params.base_params.numrays)
+	{
+		params.base_params.ra = fmod(params.base_params.ra + 2 * PI, 2 * PI);
+		params.hrayparams = (t_ray_calc_params){w, params.base_params.ra,
+			&params.ray_state.disH, &params.ray_state.hx,
+			&params.ray_state.hy, &params.ray_state.hwalldir};
+		params.vrayparams = (t_ray_calc_params){w, params.base_params.ra,
+			&params.ray_state.disV, &params.ray_state.vx,
+			&params.ray_state.vy, &params.ray_state.vwalldir};
+		calculatehorizontalray(&params.hrayparams);
+		calculateverticalray(&params.vrayparams);
+		calculate_ray(&params.base_params, &params.ray_state,
+			&params.ray_calc, &params.rayparams);
+		drawray(&params.rayparams);
+		params.base_params.ra += params.base_params.DR;
 	}
 }

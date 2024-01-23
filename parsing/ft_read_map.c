@@ -6,38 +6,11 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 19:28:43 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/11 20:02:52 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/16 15:22:26 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
-
-char	*read_map(const char *filename, int *length)
-{
-	char	*buffer;
-	FILE	*file;
-
-	file = fopen(filename, "r");
-	if (!file)
-	{
-		perror("Error opening file");
-		return (NULL);
-	}
-	fseek(file, 0, SEEK_END);
-	*length = ftell(file);
-	fseek(file, 0, SEEK_SET);
-	buffer = malloc(*length + 1);
-	if (!buffer)
-	{
-		perror("Error allocating memory for map");
-		fclose(file);
-		return (NULL);
-	}
-	fread(buffer, 1, *length, file);
-	buffer[*length] = '\0';
-	fclose(file);
-	return (buffer);
-}
 
 static int	check_line(char *map, int maxWidth, int y, int linelength)
 {

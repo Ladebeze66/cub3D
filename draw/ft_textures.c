@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:39:11 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 21:26:16 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/20 11:05:59 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	draw_texture(t_texture_params *params)
 
 void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 {
+	void *texture = NULL;
 	if (wallDir == NORTH)
 		return (w->s_img.north_texture);
 	else if (wallDir == SOUTH)
@@ -74,6 +75,10 @@ void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 		exit_error(w);
 		return (NULL);
 	}
+	 if (texture == NULL)
+		fprintf(stderr, "get_selected_texture: selected texture is NULL\n");
+	else
+		printf("get_selected_texture: selected texture = %p\n", texture);
 }
 
 t_texture_data	get_texture_data(void *texture)
@@ -97,6 +102,7 @@ int	get_texture_color(t_structure_main *w, WallDirection wallDir,
 	{
 		return (0);
 	}
+
 	texture_data = get_texture_data(selected_texture);
 	pixel_pos = (textureX + textureY * w->s_img.texture_width)
 		* (texture_data.bpp / 8);
