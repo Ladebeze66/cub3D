@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:26:12 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 19:32:51 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,6 @@ void	init_windows(t_structure_main *w)
 {
 	int	temp;
 
-	w->s_win.width = WIDTH;
-	w->s_win.height = HEIGHT;
 	init_player(w);
 	init_mlx_and_window(w);
 	load_textures(w, &temp);

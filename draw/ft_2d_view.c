@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:49:42 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:47:17 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:43:56 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,6 @@ void	init_base_params(t_base_params *params, t_structure_main *w)
 	params->FOV = FOVIEW * (PI / 180);
 	params->DR = params->FOV / params->numrays;
 	params->ra = w->s_player.pa - (params->FOV / 2);
-	printf("DEBUG: Initialisation des paramètres de base\n");
-    printf("DEBUG: tilesize (taille de la tuile) = %d\n", w->s_map.mapS);
-    printf("DEBUG: numrays (nombre de rayons) = %d\n", NUMRAY);
-    printf("DEBUG: FOV (champ de vision) = %f\n", FOVIEW * (PI / 180));
-    printf("DEBUG: DR (delta rayon) = %f\n", params->FOV / params->numrays);
-    printf("DEBUG: ra (rayon actuel) = %f\n", w->s_player.pa - (params->FOV / 2));
 	draw_background(w);
 }
 

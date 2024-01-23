@@ -6,20 +6,29 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 20:09:23 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/17 21:15:02 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:38:11 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-void	init_player(t_structure_main *w)
-{
-	w->s_player.px = 10;
-	w->s_player.py = 10;
-	w->s_player.pa = 0.1;
-	w->s_player.pdx = cos(w->s_player.pa) * 5;
-	w->s_player.pdy = sin(w->s_player.pa) * 5;
-	printf("DEBUG: pdx = %f, pdy = %f\n", w->s_player.pdx, w->s_player.pdy);
+void init_player(t_structure_main *w) {
+    w->s_player.px = w->s_map.player_x;
+    w->s_player.py = w->s_map.player_y;
+
+    // Remplacer le switch par des if
+    if (w->s_map.player_direction == 'N') {
+        w->s_player.pa = M_PI;
+    } else if (w->s_map.player_direction == 'S') {
+        w->s_player.pa = 0;
+    } else if (w->s_map.player_direction == 'E') {
+        w->s_player.pa = M_PI / 2;
+    } else if (w->s_map.player_direction == 'W') {
+        w->s_player.pa = 3 * M_PI / 2;
+    }
+
+    w->s_player.pdx = cos(w->s_player.pa) * 5;
+    w->s_player.pdy = sin(w->s_player.pa) * 5;
 }
 
 void	init_mlx_and_window(t_structure_main *w)

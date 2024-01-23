@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/16 16:50:38 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 21:07:38 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,11 @@
 # define FOVIEW 60
 # define DISRAY 1000000
 # define DOF 120
-# define WIDTH 1780
+# define WIDTH 1280
 # define HEIGHT 720
-# define BOV 500
+# define BOV 0
 # define MAX_LINE_LENGTH 100000
+
 typedef enum {
 	NORTH,
 	SOUTH,
@@ -58,19 +59,6 @@ typedef struct s_img
 	int		line_len;
 	int		endian;
 }				t_img;
-
-typedef struct s_struture_map
-{
-	char	*map;
-	char	*buff;
-	char	**temp_list;
-	int		i;
-	int		j;
-	int		temp;
-	int		mapX;
-	int		mapY;
-	int		mapS;
-}	t_structure_map;
 
 typedef struct s_struture_player
 {
@@ -125,6 +113,24 @@ typedef struct s_texture
     unsigned int	floor_color;
     unsigned int	ceil_color;
 }   t_texture;
+
+typedef struct s_struture_map
+{
+	char				*map;
+	char				*buff;
+	char				**temp_list;
+	int					i;
+	int					j;
+	int					temp;
+	int					mapX;
+	int					mapY;
+	int					mapS;
+	float				player_x;
+	float				player_y;
+	char				player_direction;
+	t_structure_windows	s_win;
+}	t_structure_map;
+
 typedef struct s_structure_main
 {
 	int					fd;
@@ -372,6 +378,8 @@ bool	handle_map(int fd, char **map_buffer, int *map_length);
 bool	parse_color_line(const char *line, unsigned int *color);
 bool	is_valid_texture(const char *line);
 bool	handle_textures(int fd, t_texture *textures);
+bool	find_player_position_and_direction(const char *map_content, int length, t_structure_map *map_info);
+void	calculate_map(t_structure_map *map_info);
 /*textures*/
 void	load_wall_textures(t_structure_main *w);
 void	draw_texture(t_texture_params *tex_params);

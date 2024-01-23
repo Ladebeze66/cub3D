@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:35:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 17:19:42 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:46:34 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ void	drawray(t_ray_params *rayparams)
 	textureparams.startX = rayparams->r * rayparams->raywidth
 		+ rayparams->backgroundOffsetX;
 	textureparams.endX = textureparams.startX + rayparams->raywidth;
+	init_texture_params(&textureparams, rayparams);
 	init_line_params(&lineparams, rayparams);
 	draw_line(&lineparams);
-	init_texture_params(&textureparams, rayparams);
 	draw_texture(&textureparams);
 }

@@ -6,7 +6,7 @@
 #    By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/14 16:54:48 by fgras-ca          #+#    #+#              #
-#    Updated: 2024/01/23 17:36:22 by fgras-ca         ###   ########.fr        #
+#    Updated: 2024/01/23 19:56:56 by fgras-ca         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,6 +55,7 @@ SRC		=	main.c								\
 			./window/ft_refresh_window.c		\
 			./parsing/ft_find_map_start.c		\
 			./parsing/ft_textures_and_colors.c	\
+			./parsing/ft_find_player_position.c	\
 
 SRC_DIR_LIBFT = libft/
 

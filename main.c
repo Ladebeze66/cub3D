@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/20 11:08:57 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:54:55 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,36 @@ int	setup_and_load_map(int argc, char **argv, t_structure_main *w, t_texture *te
 	return (1);
 }
 
+void init_structure_main(t_structure_main *w)
+{
+	if (w == NULL)
+	{
+		return ;
+	}
+	w->t = (t_texture *)malloc(sizeof(t_texture));
+	if (w->t != NULL)
+	{
+		ft_memset(w->t, 0, sizeof(t_texture));
+	}
+	ft_memset(&(w->s_win), 0, sizeof(t_structure_windows));
+	ft_memset(&(w->s_img), 0, sizeof(t_structure_img));
+	ft_memset(&(w->s_map), 0, sizeof(t_structure_map));
+	ft_memset(&(w->s_player), 0, sizeof(t_structure_player));
+	w->s_img.texture_width = 1280;
+	w->s_img.texture_height = 720;
+}
+
 int	main(int argc, char **argv)
 {
 	t_structure_main	w;
 	t_global_struct		global_struct;
 
-	w.t = malloc(sizeof(t_texture));
-	if (w.t == NULL)
-	{
-    // Gérer l'erreur d'allocation
-	}
-	ft_memset(w.t, 0, sizeof(t_texture));
+	init_structure_main(&w);
 	global_struct.w = &w;
 	global_struct.state.jkl = -1;
 	global_struct.state.yui = 0;
+	w.s_win.width = WIDTH;
+	w.s_win.height = HEIGHT;
 	if (!setup_and_load_map(argc, argv, &w, w.t))
 		return (1);
 	init_windows(&w);
@@ -56,6 +72,10 @@ int	main(int argc, char **argv)
 	if (w.s_map.map)
 	{
 		free(w.s_map.map);
+	}
+	if (w.t)
+	{
+		free(w.t);
 	}
 	return (0);
 }
