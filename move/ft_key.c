@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:17:56 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/12 20:28:07 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 12:41:41 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,14 @@ int	deal_key(int key, t_structure_main *w)
 	}
 	else if (key == 65362 || key == 65364 || key == 114 || key == 102)
 	{
+	}
+	else if (key == 101) //e door
+	{
+		printf("Touche 101\n");
+		if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '1')
+			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '2';
+		else if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '2')
+			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '1';
 	}
 	else
 	{

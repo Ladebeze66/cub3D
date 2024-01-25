@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 21:07:38 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 14:56:20 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@
 # define FOVIEW 60
 # define DISRAY 1000000
 # define DOF 120
-# define WIDTH 1280
+# define WIDTH 1780
 # define HEIGHT 720
-# define BOV 0
+# define BOV 500
 # define MAX_LINE_LENGTH 100000
 
 typedef enum {
@@ -225,8 +225,24 @@ typedef struct s_line_deltas {
 	t_line_params	*params;
 } t_line_deltas;
 
+
+
+typedef struct s_texture_params {
+	t_structure_main	*w;
+	int					startX;
+	int					endX;
+	float				lineOff;
+	float				lineH;
+	WallDirection		wallDir;
+	float				rx;
+	float				ry;
+	float				disT;
+} t_texture_params;
+
 typedef struct s_ray_params {
 	t_structure_main	*w;
+	t_square_params		sq;
+	t_texture_params	texture;
 	int					r;
 	int					tileSize;
 	float				rx;
@@ -242,18 +258,6 @@ typedef struct s_ray_params {
 	int					backgroundOffsetX;
 	int					raywidth;
 } t_ray_params;
-
-typedef struct s_texture_params {
-	t_structure_main	*w;
-	int					startX;
-	int					endX;
-	float				lineOff;
-	float				lineH;
-	WallDirection		wallDir;
-	float				rx;
-	float				ry;
-	float				disT;
-} t_texture_params;
 
 typedef struct s_ray_calc_params {
 	t_structure_main	*w;
@@ -384,6 +388,7 @@ void	calculate_map(t_structure_map *map_info);
 void	load_wall_textures(t_structure_main *w);
 void	draw_texture(t_texture_params *tex_params);
 int		get_texture_color(t_structure_main *w, WallDirection wallDir, int textureX, int textureY);
+void draw_yolo(t_ray_params *rparams, t_texture_params *tparams, int deca);
 /*3D view*/
 void	drawray(t_ray_params *ray_params);
 void	draw_background(t_structure_main *w);
@@ -396,6 +401,7 @@ void	put_pixel_img(t_structure_main *w, int x, int y, int color);
 void	draw_square_raw(t_square_params *params);
 void	draw_line(t_line_params *params);
 void	drawrays2d(t_structure_main *w);
+void	draw_black_ground(t_ray_params *params);
 //Ray
 void	calculateverticalray(t_ray_calc_params *params);
 void	handle_ra_vertical(t_ray_calc_params *params, float nTan, int tileSize);

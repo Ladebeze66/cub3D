@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:08:25 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/11 20:35:09 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 15:09:55 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,12 @@ void	move_forward(t_structure_main *w, int key)
 	int					future_px;
 	int					future_py;
 
-	if (key != 119)
-		return ;
-	params.future_px = &future_px;
-	params.future_py = &future_py;
-	params.pdx = w->s_player.pdx;
-	params.pdy = w->s_player.pdy;
-	params.collisionBuffer = COLBUF;
-	params.px = w->s_player.px;
-	params.py = w->s_player.py;
-	calculate_future_position(&params);
-	if (check_collision(w, future_px, future_py))
+if (key == 119 )
 	{
-		w->s_player.px += w->s_player.pdx;
-		w->s_player.py += w->s_player.pdy;
+		if (w->s_map.map[(int)((w->s_player.py)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + (cos(w->s_player.pa) * w->s_map.mapS))/w->s_map.mapS)]=='0')
+			w->s_player.px += cos(w->s_player.pa) * w->s_map.mapS;
+		if (w->s_map.map[(int)((w->s_player.py + (sin(w->s_player.pa) * w->s_map.mapS))/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px)/w->s_map.mapS)]=='0')
+			w->s_player.py += sin(w->s_player.pa) * w->s_map.mapS;
 	}
 }
 
@@ -41,20 +33,12 @@ void	move_backward(t_structure_main *w, int key)
 	int					future_px;
 	int					future_py;
 
-	if (key != 115)
-		return ;
-	params.future_px = &future_px;
-	params.future_py = &future_py;
-	params.pdx = -w->s_player.pdx;
-	params.pdy = -w->s_player.pdy;
-	params.collisionBuffer = COLBUF;
-	params.px = w->s_player.px;
-	params.py = w->s_player.py;
-	calculate_future_position(&params);
-	if (check_collision(w, future_px, future_py))
+	if (key == 115 )
 	{
-		w->s_player.px -= w->s_player.pdx;
-		w->s_player.py -= w->s_player.pdy;
+		if (w->s_map.map[(int)((w->s_player.py)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + (cos(w->s_player.pa + (PI)) * w->s_map.mapS))/w->s_map.mapS)]=='0')
+			w->s_player.px += cos(w->s_player.pa + (PI)) * w->s_map.mapS;
+		if (w->s_map.map[(int)((w->s_player.py + (sin(w->s_player.pa + (PI)) * w->s_map.mapS))/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px)/w->s_map.mapS)]=='0')
+			w->s_player.py += sin(w->s_player.pa + (PI)) * w->s_map.mapS;
 	}
 }
 
@@ -64,20 +48,12 @@ void	move_right(t_structure_main *w, int key)
 	int					future_px;
 	int					future_py;
 
-	if (key != 100)
-		return ;
-	params.future_px = &future_px;
-	params.future_py = &future_py;
-	params.pa = w->s_player.pa;
-	params.collisionBuffer = COLBUF;
-	params.px = w->s_player.px;
-	params.py = w->s_player.py;
-	params.direction = 'd';
-	calculate_future_position_right_left(&params);
-	if (check_collision(w, future_px, future_py))
-	{
-		w->s_player.px = future_px;
-		w->s_player.py = future_py;
+	if (key == 100 )
+	{	   
+		if (w->s_map.map[(int)((w->s_player.py)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + (cos(w->s_player.pa + (PI/2)) * w->s_map.mapS))/w->s_map.mapS)]=='0')
+			w->s_player.px += cos(w->s_player.pa + (PI/2)) * w->s_map.mapS;
+		if (w->s_map.map[(int)((w->s_player.py + (sin(w->s_player.pa + (PI/2)) * w->s_map.mapS))/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px)/w->s_map.mapS)]=='0')
+			w->s_player.py += sin(w->s_player.pa + (PI/2)) * w->s_map.mapS;
 	}
 }
 
@@ -87,22 +63,15 @@ void	move_left(t_structure_main *w, int key)
 	int					future_px;
 	int					future_py;
 
-	if (key != 97)
-		return ;
-	params.future_px = &future_px;
-	params.future_py = &future_py;
-	params.pa = w->s_player.pa;
-	params.collisionBuffer = COLBUF;
-	params.px = w->s_player.px;
-	params.py = w->s_player.py;
-	params.direction = 'a';
-	calculate_future_position_right_left(&params);
-	if (check_collision(w, future_px, future_py))
+	if (key == 97)
 	{
-		w->s_player.px = future_px;
-		w->s_player.py = future_py;
+		if (w->s_map.map[(int)((w->s_player.py)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + (cos(w->s_player.pa + (3*(PI/2))) * w->s_map.mapS))/w->s_map.mapS)]=='0')
+			w->s_player.px += cos(w->s_player.pa + (3*(PI/2))) * w->s_map.mapS;
+		if (w->s_map.map[(int)((w->s_player.py + (sin(w->s_player.pa + (3*(PI/2))) * w->s_map.mapS))/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px)/w->s_map.mapS)]=='0')
+			w->s_player.py += sin(w->s_player.pa + (3*(PI/2))) * w->s_map.mapS;
 	}
 }
+
 
 void	move(int key, t_structure_main *w)
 {

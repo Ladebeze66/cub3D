@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 23:19:39 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/20 11:18:10 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 14:56:59 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,17 @@ void	draw_background(t_structure_main *w)
 	ground_params.color = w->t->floor_color;
 	ground_params.backgroundOffsetX = backgroundoffsetx;
 	draw_sky_ground(&ground_params);
+}
+
+void	draw_black_ground(t_ray_params *params)
+{
+	t_square_params	square_params;
+
+	square_params.w = params->w;
+	square_params.y = params->texture.startX;
+	square_params.x = params->lineOff;
+	square_params.yo = params->texture.startX + 1;
+	square_params.xo = params->lineOff + params->lineH ;
+	square_params.color = 0x000000;
+	draw_square_raw(&square_params);
 }
