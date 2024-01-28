@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 19:32:51 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 21:57:21 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ void	init_windows(t_structure_main *w)
 	load_textures(w, &temp);
 	init_buffer(w);
 	load_wall_textures(w);
+	load_sprite_frames(&w->sprite, w->s_win.mlx);
 	printf("Window Dimensions: Width = %d, Height = %d\n",
 		w->s_win.width, w->s_win.height);
 	printf("Texture Dimensions: Width = %d, Height = %d\n",

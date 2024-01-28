@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 19:50:24 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/15 19:51:24 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 22:04:52 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ void	refresh_window(t_structure_main *w, t_state *state)
 			&(w->s_img.bpp), &(w->s_img.line_len), &(w->s_img.endian));
 	draw_map(w);
 	drawrays2d(w);
+	update_sprite_frame(&w->sprite);
+    draw_sprite(&w->sprite, w->s_win.mlx, w->s_win.win, w->s_win.width, w->s_win.height);
 	mlx_put_image_to_window(w->s_win.mlx, w->s_win.win, w->s_img.buffer, 0, 0);
 	rescale_sprite(w, state);
 }
@@ -45,15 +47,12 @@ void	handle_mouse_movement(t_structure_main *w)
 	int	y;
 
 	mlx_mouse_get_pos(w->s_win.mlx, w->s_win.win, &x, &y);
-	if ((x > 0 && x < w->s_win.height) && (y > 0 && y < w->s_win.width))
-	{
-		if (x != w->s_win.height / 2)
+	if ((x > 0 && x < w->s_win.width) && (y > 0 && y < w->s_win.height))
 		{
-			if (x < w->s_win.height / 2)
-				deal_key(65361, w);
-			else
-				deal_key(65363, w);
-		}
+			if (x < w->s_win.width/2-40)
+				deal_key(65361,w);
+			else if (x > w->s_win.width/2+40)
+				deal_key(65363,w);
 	}
 }
 

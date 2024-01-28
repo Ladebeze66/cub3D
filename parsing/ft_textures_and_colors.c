@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 16:19:13 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/20 11:15:41 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 18:06:00 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,30 +40,48 @@ bool	parse_texture_line(const char *line, t_texture *textures)
 	return (true);
 }
 
-bool	handle_map(int fd, char **map_buffer, int *map_length)
-{
-	char	line[MAX_LINE_LENGTH];
-	int		bytes_read;
+bool handle_map(int fd, char **map_buffer, int *map_length) {
+    FILE *stream = fdopen(fd, "r");
+    if (!stream) {
+        perror("Error converting file descriptor to FILE *");
+        return false;
+    }
 
-	*map_length = 0;
-	bytes_read = read(fd, line, MAX_LINE_LENGTH - 1);
-	while (bytes_read > 0)
-	{
-		printf("bytes read %d\n", bytes_read);
-		line[bytes_read] = '\0';
-		*map_buffer = realloc(*map_buffer, *map_length + bytes_read + 1);
-		if (!*map_buffer)
-		{
-			perror("Error reallocating memory for map buffer");
-			return (false);
-		}
-		ft_memcpy(*map_buffer + *map_length, line, bytes_read);
-		*map_length += bytes_read;
-		(*map_buffer)[*map_length] = '\0';
-		bytes_read = read(fd, line, MAX_LINE_LENGTH - 1);
-	}
-	return (true);
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    bool start_copying = false;
+
+    *map_length = 0;
+    *map_buffer = NULL;
+
+    while ((read = getline(&line, &len, stream)) != -1) {
+        // Vérifier si la ligne contient '1' ou '0'
+        if (!start_copying && (ft_strchr(line, '1') || ft_strchr(line, '0'))) {
+            start_copying = true;
+        }
+
+        // Commencer la copie si on a trouvé une ligne contenant '1' ou '0'
+        if (start_copying) {
+            *map_buffer = realloc(*map_buffer, *map_length + read + 1);
+            if (!*map_buffer) {
+                perror("Error reallocating memory for map buffer");
+                free(line);
+                fclose(stream);
+                return (false);
+            }
+            ft_memcpy(*map_buffer + *map_length, line, read);
+            *map_length += read;
+            (*map_buffer)[*map_length] = '\0';
+        }
+    }
+
+    free(line);
+    fclose(stream);
+    return (*map_buffer != NULL);
 }
+
+
 
 bool parse_number_from_str(const char **str, int *number)
 {

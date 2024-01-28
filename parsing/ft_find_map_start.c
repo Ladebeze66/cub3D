@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 20:04:23 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/20 11:14:36 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 22:48:56 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,10 @@ bool	load_cub_file(const char *filename,
 		return (cleanup_and_close(fd, map_buffer, false));
 	}
 	if (map_buffer)
+	{
+		//printf("Map buffer loaded:\n%s\n", map_buffer);
 		result = parse_map(map_buffer, map_length, map_info);
+	}
 	else
 	{
 		printf("No map data found in file.\n");

@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 20:54:55 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 22:39:18 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void init_structure_main(t_structure_main *w)
 	ft_memset(&(w->s_img), 0, sizeof(t_structure_img));
 	ft_memset(&(w->s_map), 0, sizeof(t_structure_map));
 	ft_memset(&(w->s_player), 0, sizeof(t_structure_player));
+	ft_memset(&(w->sprite), 0, sizeof(t_sprite));
 	w->s_img.texture_width = 1280;
 	w->s_img.texture_height = 720;
 }

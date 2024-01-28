@@ -6,45 +6,29 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:09:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/11 20:35:31 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 20:43:43 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-void	calculate_future_position(t_position_params *params)
-{
-	*(params->future_px) = params->px + params->pdx + params->collisionBuffer;
-	*(params->future_py) = params->py + params->pdy + params->collisionBuffer;
-}
+int can_move_to(t_structure_main *w, double future_x, double future_y) {
+    int map_x, map_y;
 
-int	check_collision(t_structure_main *w, int future_px, int future_py)
-{
-	int	future_ipx;
-	int	future_ipy;
+    // Vérification manuelle de chaque position autour de la future position
+    int dx[] = {0, 0, -COLBUF, COLBUF, -COLBUF, COLBUF, -COLBUF, COLBUF};
+    int dy[] = {-COLBUF, COLBUF, 0, 0, -COLBUF, -COLBUF, COLBUF, COLBUF};
 
-	future_ipx = future_px / w->s_map.mapS;
-	future_ipy = future_py / w->s_map.mapS;
-	return (w->s_map.map[future_ipy * w->s_map.mapX + future_ipx] == '0');
-}
+    for (int i = 0; i < 8; i++) {
+        map_x = (int)((future_x + dx[i]) / w->s_map.mapS);
+        map_y = (int)((future_y + dy[i]) / w->s_map.mapS);
+        char map_position = w->s_map.map[map_y * w->s_map.mapX + map_x];
+        if (map_position != '0' && map_position != '3') {
+            printf("Collision détectée à x = %d, y = %d\n", map_x, map_y);
+            return 0; // Collision détectée, ne peut pas se déplacer
+        }
+    }
 
-void	calculate_future_position_right_left(t_position_params *params)
-{
-	double	angle;
-	int		collision_px;
-	int		collision_py;
-
-	angle = params->pa;
-	if (params->direction == 'd')
-		angle += M_PI_2;
-	else
-		angle -= M_PI_2;
-	*(params->future_px) = params->px + (int)(cos(angle) * 5);
-	*(params->future_py) = params->py + (int)(sin(angle) * 5);
-	collision_px = *(params->future_px) + (int)(cos(params->pa)
-			* params->collisionBuffer);
-	collision_py = *(params->future_py) + (int)(sin(params->pa)
-			* params->collisionBuffer);
-	*(params->future_px) = collision_px;
-	*(params->future_py) = collision_py;
+    printf("Pas de collision, peut se déplacer\n");
+    return 1; // Pas de collision, peut se déplacer
 }

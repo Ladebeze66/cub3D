@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 20:19:01 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 20:28:31 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:36:59 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,15 @@ void	draw_map_line(t_structure_main *w, int y, int lineLength)
 	{
 		index = y * w->s_map.mapX + x;
 		if (w->s_map.map[index] == '1')
-		{
 			color = 0xFFFFFF;
-		}
 		else if (w->s_map.map[index] == '0')
-		{
 			color = 0x000000;
-		}
+		else if (w->s_map.map[index] == '2')
+			color = 0xFFFFFF;
+		else if (w->s_map.map[index] == '3')
+			color = 0x000000;
 		else
-		{
 			color = 0x000000;
-		}
 		draw_square(w, x, y, color);
 		x++;
 	}

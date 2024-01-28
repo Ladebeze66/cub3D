@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:35:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 14:58:34 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/26 17:25:05 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	drawray(t_ray_params *rayparams)
 		deca = olineh - rayparams->w->s_win.height;
 	else
 		deca = 0;
-	//draw_black_ground(rayparams);
+	draw_black_ground(rayparams, textureparams);
 	if (deca != 0)
 		draw_yolo(rayparams, &textureparams, deca);
 	else
@@ -82,7 +82,7 @@ void draw_yolo(t_ray_params *rparams, t_texture_params *tparams, int deca)
 	float	perspectivefactor;
 	int		texturex;
 	int		color;
-	
+
 	texturewidth = tparams->w->s_img.texture_width;
 	textureheight = tparams->w->s_img.texture_height;
 	i = 0;
@@ -112,15 +112,15 @@ void draw_yolo(t_ray_params *rparams, t_texture_params *tparams, int deca)
 				texturex = texturewidth - 1;
 			}
 			//printf("%f %f\n",lineOff, lineOff/lineH);
-		
-		
+
+
 			color = get_texture_color(tparams->w, tparams->wallDir, texturex, y);
-		
-		
+
+
 		//	BLOCK OK MEH
 		//	float ww = ((720+merde)/lineH);
 		//	//printf("%d %d %d\n", t ,td, merde);
-		//	put_pixel_img(w, x, (int)(iii*ww)-merde/2, color);	
+		//	put_pixel_img(w, x, (int)(iii*ww)-merde/2, color);
 		//	iii++;
 
 			int a = tparams->lineOff - deca / 2;

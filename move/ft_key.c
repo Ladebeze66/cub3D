@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:17:56 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 12:41:41 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:45:14 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	adjust_player_angle(t_structure_main *w, int key)
 
 	if (key != 65361 && key != 65363)
 		return ;
-	angle_adjustment = 16 * ((PI / 3) / NUMRAY);
+	angle_adjustment = 4 * (PI/180);
 	if (key == 65361)
 	{
 		w->s_player.pa -= angle_adjustment;
@@ -80,10 +80,10 @@ int	deal_key(int key, t_structure_main *w)
 	else if (key == 101) //e door
 	{
 		printf("Touche 101\n");
-		if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '1')
+		if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '2')
+			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '3';
+		else if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '3')
 			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '2';
-		else if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '2')
-			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '1';
 	}
 	else
 	{

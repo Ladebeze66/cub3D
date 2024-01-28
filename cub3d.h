@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 14:56:20 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/28 22:03:37 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # define PI 3.14159265359
 # define P2 PI/2
 # define P3 3*PI/2
-# define COLBUF 2
+# define COLBUF 1
 # define NUMRAY 1280
 # define FOVIEW 60
 # define DISRAY 1000000
@@ -92,6 +92,8 @@ typedef struct s_struture_img
 	void	*south_texture;
 	void	*west_texture;
 	void	*east_texture;
+	void	*door_texture;
+	void	*open_door_texture;
 	int		texture_width;
 	int		texture_height;
 }	t_structure_img;
@@ -110,6 +112,8 @@ typedef struct s_texture
     char			*south;
     char			*west;
     char			*east;
+	char			*door;
+	char			*door_open;
     unsigned int	floor_color;
     unsigned int	ceil_color;
 }   t_texture;
@@ -131,6 +135,12 @@ typedef struct s_struture_map
 	t_structure_windows	s_win;
 }	t_structure_map;
 
+typedef struct s_sprite {
+    void *frames[3]; // Tableau pour stocker les frames du sprite
+    int width, height; // Dimensions du sprite
+    int current_frame; // Index de la frame actuelle
+} t_sprite;
+
 typedef struct s_structure_main
 {
 	int					fd;
@@ -142,6 +152,8 @@ typedef struct s_structure_main
 	t_structure_map		s_map;
 	t_structure_player	s_player;
 	t_texture			*t;
+	char				current_wall_type;
+	t_sprite			sprite;
 }	t_structure_main;
 
 typedef struct s_res_params {
@@ -360,11 +372,9 @@ int		ft_strcmp(const char *s1, const char *s2);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memset(void *s, int c, size_t n);
 /*collision*/
-void	calculate_future_position(t_position_params *params);
-int		check_collision(t_structure_main *w, int future_px, int future_py);
-void	calculate_future_position_right_left(t_position_params *params);
-//ft_utils_convert.c 1/5
+int can_move_to(t_structure_main *w, double future_x, double future_y);
 char	*ft_itoa(int nb);
+void	draw_black_ground(t_ray_params *params, t_texture_params tparams);
 /*parsing*/
 int		is_map_closed(char* map, int width, int height);
 bool	parse_map(const char *map_content, int length, t_structure_map *map_info);
@@ -401,7 +411,6 @@ void	put_pixel_img(t_structure_main *w, int x, int y, int color);
 void	draw_square_raw(t_square_params *params);
 void	draw_line(t_line_params *params);
 void	drawrays2d(t_structure_main *w);
-void	draw_black_ground(t_ray_params *params);
 //Ray
 void	calculateverticalray(t_ray_calc_params *params);
 void	handle_ra_vertical(t_ray_calc_params *params, float nTan, int tileSize);
@@ -413,5 +422,9 @@ void	init_windows(t_structure_main *w);
 void	init_player(t_structure_main *w);
 void	init_mlx_and_window(t_structure_main *w);
 void	sleep_mouse(t_global_struct *global_struct);
+//sprite
+void	load_sprite_frames(t_sprite *sprite, void *mlx_ptr);
+void	update_sprite_frame(t_sprite *sprite);
+void	draw_sprite(t_sprite *sprite, void *mlx_ptr, void *win_ptr, int win_width, int win_height);
 
 #endif

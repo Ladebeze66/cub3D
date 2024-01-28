@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:39:11 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 21:21:04 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/25 20:34:32 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,12 @@ void	draw_texture(t_texture_params *params)
 void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 {
 	void *texture = NULL;
-	if (wallDir == NORTH)
+	if (w->current_wall_type == '2') {
+        return w->s_img.door_texture; // Texture pour porte fermée
+    } /*else if (w->current_wall_type == '3') {
+        return w->s_img.open_door_texture; // Texture pour porte ouverte
+    }*/
+	else if (wallDir == NORTH)
 		return (w->s_img.north_texture);
 	else if (wallDir == SOUTH)
 		return (w->s_img.south_texture);
@@ -100,6 +105,7 @@ int	get_texture_color(t_structure_main *w, WallDirection wallDir,
 	selected_texture = get_selected_texture(w, wallDir);
 	if (selected_texture == NULL)
 	{
+		fprintf(stderr, "No texture selected for color retrieval\n");
 		return (0);
 	}
 
