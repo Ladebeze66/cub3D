@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/28 22:03:37 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 20:09:43 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,30 @@
 # include "include/mlx.h"
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 100000
+# define BUFFER_SIZE 100000
 # endif
 
 # define PI 3.14159265359
-# define P2 PI/2
-# define P3 3*PI/2
+# define P2 1.57079632679
+# define P3 4.71238898038
 # define COLBUF 1
 # define NUMRAY 1280
 # define FOVIEW 60
 # define DISRAY 1000000
 # define DOF 120
-# define WIDTH 1780
+# define WIDTH 1680
 # define HEIGHT 720
-# define BOV 500
+# define BOV 400
 # define MAX_LINE_LENGTH 100000
+# define DX_LENGTH 8
 
-typedef enum {
+typedef enum s_WallDirection {
 	NORTH,
 	SOUTH,
 	WEST,
 	EAST,
-	NONE  // Utilisé lorsqu'aucun mur n'est touché
-} WallDirection;
+	NONE
+}	t_WallDirection;
 
 typedef struct s_img
 {
@@ -108,15 +109,15 @@ typedef struct s_struture_windows
 
 typedef struct s_texture
 {
-    char			*north;
-    char			*south;
-    char			*west;
-    char			*east;
+	char			*north;
+	char			*south;
+	char			*west;
+	char			*east;
 	char			*door;
 	char			*door_open;
-    unsigned int	floor_color;
-    unsigned int	ceil_color;
-}   t_texture;
+	unsigned int	floor_color;
+	unsigned int	ceil_color;
+}	t_texture;
 
 typedef struct s_struture_map
 {
@@ -126,9 +127,9 @@ typedef struct s_struture_map
 	int					i;
 	int					j;
 	int					temp;
-	int					mapX;
-	int					mapY;
-	int					mapS;
+	int					map_x;
+	int					map_y;
+	int					map_s;
 	float				player_x;
 	float				player_y;
 	char				player_direction;
@@ -136,10 +137,14 @@ typedef struct s_struture_map
 }	t_structure_map;
 
 typedef struct s_sprite {
-    void *frames[3]; // Tableau pour stocker les frames du sprite
-    int width, height; // Dimensions du sprite
-    int current_frame; // Index de la frame actuelle
-} t_sprite;
+	void	*frames[3];
+	int		width;
+	int		height;
+	int		current_frame;
+	float	world_x;
+	float	world_y;
+	float	distance;
+}	t_sprite;
 
 typedef struct s_structure_main
 {
@@ -166,7 +171,7 @@ typedef struct s_res_params {
 	int		original_y;
 	int		pixel_pos_rescaled;
 	int		pixel_pos_original;
-} t_res_params;
+}	t_res_params;
 
 typedef struct s_rescale_params {
 	void			*original_img;
@@ -177,30 +182,29 @@ typedef struct s_rescale_params {
 	int				px;
 	int				py;
 	t_res_params	*res;
-} t_rescale_params;
+}	t_rescale_params;
 
 typedef struct s_position_params {
 	int		*future_px;
 	int		*future_py;
 	int		pdx;
 	int		pdy;
-	int		collisionBuffer;
+	int		collision_buffer;
 	int		px;
 	int		py;
 	double	pa;
 	char	direction;
-} t_position_params;
-
+}	t_position_params;
 
 typedef struct s_map_params {
 	t_structure_map	*map_info;
 	const char		*buffer;
 	int				length;
-	int				*maxWidth;
+	int				*max_width;
 	int				*height;
-	int				*currentWidth;
-	int				*isNewLine;
-} t_map_params;
+	int				*current_width;
+	int				*is_new_line;
+}	t_map_params;
 
 typedef struct s_square_params {
 	t_structure_main	*w;
@@ -209,15 +213,15 @@ typedef struct s_square_params {
 	int					xo;
 	int					yo;
 	int					color;
-} t_square_params;
+}	t_square_params;
 
 typedef struct s_sky_ground_params {
 	t_structure_main	*w;
-	int					startHeight;
-	int					endHeight;
+	int					start_height;
+	int					end_height;
 	int					color;
-	int					backgroundOffsetX;
-} t_sky_ground_params;
+	int					background_off_setx;
+}	t_sky_ground_params;
 
 typedef struct s_line_params {
 	t_structure_main	*w;
@@ -226,7 +230,7 @@ typedef struct s_line_params {
 	int					x1;
 	int					y1;
 	int					color;
-} t_line_params;
+}	t_line_params;
 
 typedef struct s_line_deltas {
 	int				dx;
@@ -235,53 +239,51 @@ typedef struct s_line_deltas {
 	int				sy;
 	int				err;
 	t_line_params	*params;
-} t_line_deltas;
-
-
+}	t_line_deltas;
 
 typedef struct s_texture_params {
 	t_structure_main	*w;
-	int					startX;
-	int					endX;
-	float				lineOff;
-	float				lineH;
-	WallDirection		wallDir;
+	int					start_x;
+	int					end_x;
+	float				line_off;
+	float				line_h;
+	t_WallDirection		wall_dir;
 	float				rx;
 	float				ry;
-	float				disT;
-} t_texture_params;
+	float				dis_t;
+}	t_texture_params;
 
 typedef struct s_ray_params {
 	t_structure_main	*w;
 	t_square_params		sq;
 	t_texture_params	texture;
 	int					r;
-	int					tileSize;
+	int					tile_size;
 	float				rx;
 	float				ry;
-	float				disT;
-	WallDirection		wallDir;
-	int					numRays;
+	float				dis_t;
+	t_WallDirection		wall_dir;
+	int					num_rays;
 	int					color;
-	int					start3DHeight;
-	int					max3DHeight;
-	float				lineH;
-	float				lineOff;
-	int					backgroundOffsetX;
+	int					start3d_height;
+	int					max3d_height;
+	float				line_h;
+	float				line_off;
+	int					background_off_setx;
 	int					raywidth;
-} t_ray_params;
+}	t_ray_params;
 
 typedef struct s_ray_calc_params {
 	t_structure_main	*w;
 	float				ra;
-	float				*disRay;
+	float				*dis_ray;
 	float				*rx;
 	float				*ry;
-	WallDirection		*wallDir;
+	t_WallDirection		*wall_dir;
 	float				xo;
 	float				yo;
 	int					dof;
-} t_ray_calc_params;
+}	t_ray_calc_params;
 
 typedef struct s_texture_data
 {
@@ -295,71 +297,109 @@ typedef struct s_init_params {
 	t_structure_main	*w;
 	int					tilesize;
 	int					numrays;
-	float				FOV;
-	float				DR;
-} t_init_params;
+	float				fo_v;
+	float				d_r;
+}	t_init_params;
 
 typedef struct s_ray_properties {
-	float			disH;
-	float			disV;
-	WallDirection	hwalldir;
-	WallDirection	vwalldir;
+	float			dis_h;
+	float			dis_v;
+	t_WallDirection	hwalldir;
+	t_WallDirection	vwalldir;
 	float			hx;
 	float			hy;
 	float			vx;
 	float			vy;
-} t_ray_properties;
+}	t_ray_properties;
 
-typedef struct {
+typedef struct s_base_params {
 	int		tilesize;
 	int		numrays;
-	float	FOV;
-	float	DR;
+	float	fo_v;
+	float	d_r;
 	float	ra;
-} t_base_params;
+}	t_base_params;
 
-typedef struct {
-	float			disH;
-	float			disV;
-	float			disT;
+typedef struct s_ray_state {
+	float			dis_h;
+	float			dis_v;
+	float			dis_t;
 	float			hx;
 	float			hy;
 	float			vx;
 	float			vy;
-	WallDirection	hwalldir;
-	WallDirection	vwalldir;
-} t_ray_state;
+	t_WallDirection	hwalldir;
+	t_WallDirection	vwalldir;
+}	t_ray_state;
 
-typedef struct {
+typedef struct s_ray_calc {
 	t_structure_main	*w;
 	int					r;
 	int					color;
-} t_ray_calc;
+}	t_ray_calc;
 
-typedef struct {
+typedef struct s_drawrays2d_params {
 	t_base_params		base_params;
 	t_ray_state			ray_state;
 	t_ray_calc			ray_calc;
 	t_ray_params		rayparams;
 	t_ray_calc_params	hrayparams;
 	t_ray_calc_params	vrayparams;
-} t_drawrays2d_params;
+}	t_drawrays2d_params;
 
-typedef struct {
-    int	jkl;
-    int	yui;
-} t_state;
+typedef struct s_state {
+	int	jkl;
+	int	yui;
+}	t_state;
 
-typedef struct {
-    t_structure_main	*w;
-    t_state				state;
-} t_global_struct;
+typedef struct s_global_struct {
+	t_structure_main	*w;
+	t_state				state;
+}	t_global_struct;
 
-//ft_utils_split.c 5 / 5
+typedef struct s_draw_params
+{
+	int		texturewidth;
+	int		textureheight;
+	int		texturex;
+	int		textureY;
+	int		a;
+	int		b;
+	int		c;
+	double	step;
+	int		x;
+	int		i;
+}	t_draw_params;
+
+typedef struct s_collision_params
+{
+	int	dx[DX_LENGTH];
+	int	dy[DX_LENGTH];
+}	t_collision_params;
+
+typedef struct s_player_info
+{
+	bool			*found_player;
+	t_structure_map	*map;
+	int				line_number;
+	int				column_number;
+}	t_player_info;
+
+typedef struct s_point
+{
+	int	x;
+	int	y;
+}	t_point;
+
+typedef struct s_map_check
+{
+	char	*map;
+	int		maxWidth;
+	int		height;
+}	t_map_check;
+
 char	**ft_split(char const *s, char c);
-//ft_utils_gnl.c 4 / 5
 char	*get_next_line(int fd);
-/*ft_key.c 3/5*/
 int		*kill_prog(t_structure_main *w);
 void	move(int key, t_structure_main *w);
 int		deal_key(int key, t_structure_main *w);
@@ -371,13 +411,12 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 int		ft_strcmp(const char *s1, const char *s2);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memset(void *s, int c, size_t n);
-/*collision*/
-int can_move_to(t_structure_main *w, double future_x, double future_y);
+int		can_move_to(t_structure_main *w, double future_x, double future_y);
 char	*ft_itoa(int nb);
 void	draw_black_ground(t_ray_params *params, t_texture_params tparams);
-/*parsing*/
-int		is_map_closed(char* map, int width, int height);
-bool	parse_map(const char *map_content, int length, t_structure_map *map_info);
+int		is_map_closed(char *map, int width, int height);
+bool	parse_map(const char *map_content,
+			int length, t_structure_map *map_info);
 int		check_borders(char *map, int maxWidth, int height);
 int		check_interior(char *map, int maxWidth, int height);
 void	exit_error(t_structure_main *w);
@@ -386,24 +425,25 @@ void	process_character(t_map_params *params, int *i);
 void	get_map_dimensions(t_map_params *params);
 void	fill_map_space(t_structure_map *map_info, int maxWidth, int height);
 void	copy_map_data(t_map_params *params);
-bool	load_cub_file(const char *filename, t_texture *textures, t_structure_map *map_info);
+bool	load_cub_file(const char *filename,
+			t_texture *textures, t_structure_map *map_info);
 bool	parse_texture_line(const char *line, t_texture *textures);
 bool	handle_map(int fd, char **map_buffer, int *map_length);
 bool	parse_color_line(const char *line, unsigned int *color);
+bool	parse_number_from_str(const char **str, int *number);
 bool	is_valid_texture(const char *line);
 bool	handle_textures(int fd, t_texture *textures);
-bool	find_player_position_and_direction(const char *map_content, int length, t_structure_map *map_info);
+bool	find_player(const char *map_content,
+			int length, t_structure_map *map);
 void	calculate_map(t_structure_map *map_info);
-/*textures*/
 void	load_wall_textures(t_structure_main *w);
 void	draw_texture(t_texture_params *tex_params);
-int		get_texture_color(t_structure_main *w, WallDirection wallDir, int textureX, int textureY);
-void draw_yolo(t_ray_params *rparams, t_texture_params *tparams, int deca);
-/*3D view*/
+int		get_texture_color(t_structure_main *w,
+			t_WallDirection wallDir, int textureX, int textureY);
+void	draw_yolo(t_ray_params *rparams, t_texture_params *tparams, int deca);
 void	drawray(t_ray_params *ray_params);
 void	draw_background(t_structure_main *w);
 float	correctFisheye(float distance, float ra, float playerAngle);
-//2D map
 void	rescale_image(t_rescale_params *params, t_structure_main *w);
 void	draw_square(t_structure_main *w, int x, int y, int color);
 void	draw_map(t_structure_main *w);
@@ -411,20 +451,27 @@ void	put_pixel_img(t_structure_main *w, int x, int y, int color);
 void	draw_square_raw(t_square_params *params);
 void	draw_line(t_line_params *params);
 void	drawrays2d(t_structure_main *w);
-//Ray
 void	calculateverticalray(t_ray_calc_params *params);
 void	handle_ra_vertical(t_ray_calc_params *params, float nTan, int tileSize);
 void	calculatehorizontalray(t_ray_calc_params *params);
-void	handle_ra_not_equal_pi(t_ray_calc_params *params, float atan, int tilesize);
+void	handle_ra_not_equal_pi(t_ray_calc_params *params,
+			float atan, int tilesize);
 float	dist(float ax, float ay, float bx, float by);
-//window
 void	init_windows(t_structure_main *w);
 void	init_player(t_structure_main *w);
 void	init_mlx_and_window(t_structure_main *w);
 void	sleep_mouse(t_global_struct *global_struct);
-//sprite
-void	load_sprite_frames(t_sprite *sprite, void *mlx_ptr);
-void	update_sprite_frame(t_sprite *sprite);
-void	draw_sprite(t_sprite *sprite, void *mlx_ptr, void *win_ptr, int win_width, int win_height);
+void	init_line_params(t_line_params *lineparams, t_ray_params *rayParams);
+void	init_texture_params(t_texture_params *textureparams,
+			t_ray_params *rayParams);
+void	initialize_variables(int *i, int *line_number,
+			int *column_number, bool *found_player);
+bool	check_for_player(char current_char, bool *found_player);
+void	update_player_info(t_structure_map *map_info,
+			int line_number, int column_number, char player_direction);
+void	update_position(char current_char, int *line_number, int *column_number);
+bool	check_for_multiple_players(bool found_player);
+int		check_boundaries(t_point p, t_map_check *map_check);
+int		is_space_surrounded_by_walls(t_map_check *map_check, t_point p);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:17:56 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 18:45:14 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:53:45 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	adjust_player_angle(t_structure_main *w, int key)
 
 	if (key != 65361 && key != 65363)
 		return ;
-	angle_adjustment = 4 * (PI/180);
+	angle_adjustment = 4 * (PI / 180);
 	if (key == 65361)
 	{
 		w->s_player.pa -= angle_adjustment;
@@ -67,27 +67,28 @@ void	handle_movement_keys(int key, t_structure_main *w)
 int	deal_key(int key, t_structure_main *w)
 {
 	if (key == 65307)
-	{
 		kill_prog(w);
-	}
 	else if (key == 65361 || key == 65363)
-	{
 		adjust_player_angle(w, key);
-	}
 	else if (key == 65362 || key == 65364 || key == 114 || key == 102)
 	{
 	}
-	else if (key == 101) //e door
+	else if (key == 101)
 	{
-		printf("Touche 101\n");
-		if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '2')
-			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '3';
-		else if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] == '3')
-			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)/w->s_map.mapS) * w->s_map.mapX + (int)((w->s_player.px + cos(w->s_player.pa) * 7)/w->s_map.mapS)] = '2';
+		if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)
+				/ w->s_map.map_s) *w->s_map.map_x + (int)((w->s_player.px
+				+ cos(w->s_player.pa) * 7) / w->s_map.map_s)] == '2')
+			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)
+					/ w->s_map.map_s) *w->s_map.map_x + (int)((w->s_player.px
+						+ cos(w->s_player.pa) * 7) / w->s_map.map_s)] = '3';
+		else if (w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)
+				/ w->s_map.map_s) *w->s_map.map_x + (int)((w->s_player.px
+				+ cos(w->s_player.pa) * 7) / w->s_map.map_s)] == '3')
+			w->s_map.map[(int)((w->s_player.py + sin(w->s_player.pa) * 7)
+					/ w->s_map.map_s) *w->s_map.map_x + (int)((w->s_player.px
+						+ cos(w->s_player.pa) * 7) / w->s_map.map_s)] = '2';
 	}
 	else
-	{
 		handle_movement_keys(key, w);
-	}
 	return (key);
 }

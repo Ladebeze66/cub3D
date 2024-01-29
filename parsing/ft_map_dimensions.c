@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 22:17:19 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/15 22:37:27 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:05:03 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 void	update_max_dimensions(t_map_params *params)
 {
 	(*(params->height))++;
-	if (*(params->currentWidth) > *(params->maxWidth))
+	if (*(params->current_width) > *(params->max_width))
 	{
-		*(params->maxWidth) = *(params->currentWidth);
+		*(params->max_width) = *(params->current_width);
 	}
-	*(params->currentWidth) = 0;
-	*(params->isNewLine) = 1;
+	*(params->current_width) = 0;
+	*(params->is_new_line) = 1;
 }
 
 void	process_character(t_map_params *params, int *i)
@@ -31,8 +31,8 @@ void	process_character(t_map_params *params, int *i)
 	}
 	else if (params->buffer[*i] != '\r')
 	{
-		(*(params->currentWidth))++;
-		*(params->isNewLine) = 0;
+		(*(params->current_width))++;
+		*(params->is_new_line) = 0;
 	}
 	(*i)++;
 }
@@ -46,16 +46,16 @@ void	get_map_dimensions(t_map_params *params)
 	i = 0;
 	currentwidth = 0;
 	isnewline = 1;
-	*(params->maxWidth) = 0;
+	*(params->max_width) = 0;
 	*(params->height) = 0;
-	params->currentWidth = &currentwidth;
-	params->isNewLine = &isnewline;
+	params->current_width = &currentwidth;
+	params->is_new_line = &isnewline;
 	while (i < params->length)
 		process_character(params, &i);
-	if (!*(params->isNewLine))
+	if (!*(params->is_new_line))
 		update_max_dimensions(params);
 	printf("Map dimensions: maxWidth=%d, height=%d\n",
-		*(params->maxWidth), *(params->height));
+		*(params->max_width), *(params->height));
 }
 
 void	fill_map_space(t_structure_map *map_info, int maxWidth, int height)
@@ -88,9 +88,9 @@ void	copy_map_data(t_map_params *params)
 			y++;
 			x = 0;
 		}
-		else if (params->buffer[i] != '\r' && x < *params->maxWidth)
+		else if (params->buffer[i] != '\r' && x < *params->max_width)
 		{
-			params->map_info->map[y * *params->maxWidth + x]
+			params->map_info->map[y * *params->max_width + x]
 				= params->buffer[i];
 			x++;
 		}

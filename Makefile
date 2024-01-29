@@ -6,7 +6,7 @@
 #    By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/14 16:54:48 by fgras-ca          #+#    #+#              #
-#    Updated: 2024/01/23 19:56:56 by fgras-ca         ###   ########.fr        #
+#    Updated: 2024/01/29 20:12:12 by fgras-ca         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,6 @@ WHITE			= \033[0;97m
 ORANGE			= \033[38;5;214m
 
 NAME = cub3d
-LIBFT = libft.a
 
 SRC		=	main.c								\
 			./utils/ft_utils_gnl.c				\
@@ -32,7 +31,6 @@ SRC		=	main.c								\
 			./utils/ft_utils_convert.c			\
 			./utils/ft_utils_str_1.c			\
 			./parsing/ft_map_check.c 			\
-			./parsing/ft_read_map.c 			\
 			./parsing/ft_map_dimensions.c		\
 			./parsing/ft_parsing.c 				\
 			./move/ft_collision.c 				\
@@ -43,6 +41,7 @@ SRC		=	main.c								\
 			./draw/ft_2d_view.c					\
 			./draw/ft_textures.c				\
 			./draw/ft_3d_view.c					\
+			./draw/ft_3d_view_utils.c			\
 			./draw/ft_horizontal_ray.c			\
 			./draw/ft_vertical_ray.c			\
 			./draw/ft_pixel.c					\
@@ -56,10 +55,9 @@ SRC		=	main.c								\
 			./parsing/ft_find_map_start.c		\
 			./parsing/ft_textures_and_colors.c	\
 			./parsing/ft_find_player_position.c	\
-
-SRC_DIR_LIBFT = libft/
-
-SRC_LIBFT = $(addprefix $(SRC_DIR_LIBFT), $(LIBFT))
+			./parsing/ft_find_player_utils.c	\
+			./parsing/ft_map_check_utils.c		\
+			./parsing/ft_text_and_col_utils.c	\
 
 OBJ		= $(SRC:.c=.o)
 

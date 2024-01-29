@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 20:19:01 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 18:36:59 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:47:34 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	draw_map_line(t_structure_main *w, int y, int lineLength)
 	x = 0;
 	while (x < lineLength)
 	{
-		index = y * w->s_map.mapX + x;
+		index = y * w->s_map.map_x + x;
 		if (w->s_map.map[index] == '1')
 			color = 0xFFFFFF;
 		else if (w->s_map.map[index] == '0')
@@ -48,12 +48,12 @@ void	draw_map(t_structure_main *w)
 		printf("Erreur: La carte n'a pas été chargée correctement.\n");
 		return ;
 	}
-	while (y < w->s_map.mapY)
+	while (y < w->s_map.map_y)
 	{
 		linelength = 0;
-		while (linelength < w->s_map.mapX
-			&& w->s_map.map[y * w->s_map.mapX + linelength]
-			!= '\n' && w->s_map.map[y * w->s_map.mapX + linelength] != '\0')
+		while (linelength < w->s_map.map_x
+			&& w->s_map.map[y * w->s_map.map_x + linelength]
+			!= '\n' && w->s_map.map[y * w->s_map.map_x + linelength] != '\0')
 		{
 			linelength++;
 		}

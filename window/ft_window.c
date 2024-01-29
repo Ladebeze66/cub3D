@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/28 21:57:21 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:47:48 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,12 @@ void	calculate_map_scale(t_structure_main *w)
 	int	maps_x;
 	int	maps_y;
 
-	maps_x = w->s_win.width / (w->s_map.mapX * 4);
-	maps_y = w->s_win.height / (w->s_map.mapY * 2);
+	maps_x = w->s_win.width / (w->s_map.map_x * 4);
+	maps_y = w->s_win.height / (w->s_map.map_y * 2);
 	if (maps_x < maps_y)
-		w->s_map.mapS = maps_x;
+		w->s_map.map_s = maps_x;
 	else
-		w->s_map.mapS = maps_y;
+		w->s_map.map_s = maps_y;
 }
 
 void	init_windows(t_structure_main *w)
@@ -93,7 +93,6 @@ void	init_windows(t_structure_main *w)
 	load_textures(w, &temp);
 	init_buffer(w);
 	load_wall_textures(w);
-	load_sprite_frames(&w->sprite, w->s_win.mlx);
 	printf("Window Dimensions: Width = %d, Height = %d\n",
 		w->s_win.width, w->s_win.height);
 	printf("Texture Dimensions: Width = %d, Height = %d\n",

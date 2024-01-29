@@ -6,13 +6,14 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/28 22:39:18 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:11:41 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int	setup_and_load_map(int argc, char **argv, t_structure_main *w, t_texture *textures)
+int	setup_and_load_map(int argc, char **argv,
+		t_structure_main *w, t_texture *textures)
 {
 	if (argc > 2)
 	{
@@ -32,7 +33,7 @@ int	setup_and_load_map(int argc, char **argv, t_structure_main *w, t_texture *te
 	return (1);
 }
 
-void init_structure_main(t_structure_main *w)
+void	init_structure_main(t_structure_main *w)
 {
 	if (w == NULL)
 	{

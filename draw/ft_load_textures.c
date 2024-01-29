@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 20:30:59 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 20:34:50 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:13:50 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void	load_wall_textures(t_structure_main *w)
 	load_texture(w, w->t->west, (void **)&w->s_img.west_texture);
 	load_texture(w, w->t->east, (void **)&w->s_img.east_texture);
 	load_texture(w, "textures/door_close.xpm", (void **)&w->s_img.door_texture);
-	//load_texture(w, "textures/open_door.xpm", (void **)&w->s_img.open_door_texture);
 }
 
 void	exit_error(t_structure_main *w)

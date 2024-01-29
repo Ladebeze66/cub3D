@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 22:38:28 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/14 17:54:44 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:47:48 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void	draw_square(t_structure_main *w, int x, int y, int color)
 	int	i;
 	int	j;
 
-	xo = x * w->s_map.mapS;
-	yo = y * w->s_map.mapS;
-	size = w->s_map.mapS;
+	xo = x * w->s_map.map_s;
+	yo = y * w->s_map.map_s;
+	size = w->s_map.map_s;
 	i = 0;
 	while (i < size)
 	{

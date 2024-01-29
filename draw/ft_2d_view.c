@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:49:42 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 17:43:56 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:20:39 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,39 +26,39 @@ float	correctfisheye(float distance, float ra, float playerAngle)
 
 void	init_base_params(t_base_params *params, t_structure_main *w)
 {
-	params->tilesize = w->s_map.mapS;
+	params->tilesize = w->s_map.map_s;
 	params->numrays = NUMRAY;
-	params->FOV = FOVIEW * (PI / 180);
-	params->DR = params->FOV / params->numrays;
-	params->ra = w->s_player.pa - (params->FOV / 2);
+	params->fo_v = FOVIEW * (PI / 180);
+	params->d_r = params->fo_v / params->numrays;
+	params->ra = w->s_player.pa - (params->fo_v / 2);
 	draw_background(w);
 }
 
 void	calculate_ray(t_base_params *base, t_ray_state *state,
 		t_ray_calc *calc, t_ray_params *rayparams)
 {
-	if (state->disH < state->disV)
+	if (state->dis_h < state->dis_v)
 	{
-		rayparams->disT = state->disH;
+		rayparams->dis_t = state->dis_h;
 		calc->color = 0xFF0000;
-		rayparams->wallDir = state->hwalldir;
+		rayparams->wall_dir = state->hwalldir;
 		rayparams->rx = state->hx;
 		rayparams->ry = state->hy;
 	}
 	else
 	{
-		rayparams->disT = state->disV;
+		rayparams->dis_t = state->dis_v;
 		calc->color = 0x00FF00;
-		rayparams->wallDir = state->vwalldir;
+		rayparams->wall_dir = state->vwalldir;
 		rayparams->rx = state->vx;
 		rayparams->ry = state->vy;
 	}
-	rayparams->disT = correctfisheye(rayparams->disT,
+	rayparams->dis_t = correctfisheye(rayparams->dis_t,
 			base->ra, calc->w->s_player.pa);
 	rayparams->w = calc->w;
-	rayparams->tileSize = base->tilesize;
+	rayparams->tile_size = base->tilesize;
 	rayparams->r = calc->r;
-	rayparams->numRays = base->numrays;
+	rayparams->num_rays = base->numrays;
 	rayparams->color = calc->color;
 }
 
@@ -73,16 +73,16 @@ void	drawrays2d(t_structure_main *w)
 	{
 		params.base_params.ra = fmod(params.base_params.ra + 2 * PI, 2 * PI);
 		params.hrayparams = (t_ray_calc_params){w, params.base_params.ra,
-			&params.ray_state.disH, &params.ray_state.hx,
+			&params.ray_state.dis_h, &params.ray_state.hx,
 			&params.ray_state.hy, &params.ray_state.hwalldir};
 		params.vrayparams = (t_ray_calc_params){w, params.base_params.ra,
-			&params.ray_state.disV, &params.ray_state.vx,
+			&params.ray_state.dis_v, &params.ray_state.vx,
 			&params.ray_state.vy, &params.ray_state.vwalldir};
 		calculatehorizontalray(&params.hrayparams);
 		calculateverticalray(&params.vrayparams);
 		calculate_ray(&params.base_params, &params.ray_state,
 			&params.ray_calc, &params.rayparams);
 		drawray(&params.rayparams);
-		params.base_params.ra += params.base_params.DR;
+		params.base_params.ra += params.base_params.d_r;
 	}
 }

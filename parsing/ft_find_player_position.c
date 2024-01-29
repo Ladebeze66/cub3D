@@ -6,97 +6,60 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 19:54:51 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/23 20:22:20 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 18:58:31 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
-static void	initialize_variables(int *i, int *line_number, int *column_number, bool *found_player)
+bool	is_player_char(char c)
 {
-	*i = 0;
-	*line_number = 0;
-	*column_number = 0;
-	*found_player = false;
+	return (c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
-static bool check_for_player(char current_char, bool *found_player)
+static bool	process_player_char(char current_char, t_player_info *player_info)
 {
-	if (current_char == 'N' || current_char == 'S' || current_char == 'E' || current_char == 'W')
+	if (is_player_char(current_char))
 	{
-		if (*found_player)
+		if (check_for_multiple_players(*(player_info->found_player)))
+		{
+			*(player_info->found_player) = true;
+			update_player_info(player_info->map, player_info->line_number,
+				player_info->column_number, current_char);
+		}
+		else
 		{
 			printf("Multiple player start positions found. Invalid map.\n");
-			return false;
+			return (false);
 		}
-		*found_player = true;
 	}
-	return true;
+	return (true);
 }
 
-static void update_player_info(t_structure_map *map_info, int line_number, int column_number, char player_direction)
+bool	find_player(const char *map_content, int length, t_structure_map *map)
 {
-    map_info->player_x = column_number * map_info->mapS + map_info->mapS / 2;
-    map_info->player_y = line_number * map_info->mapS + map_info->mapS / 2;
-    map_info->player_direction = player_direction;
-    printf("Player found: x = %f, y = %f, direction = %c\n", map_info->player_x, map_info->player_y, map_info->player_direction);
-}
+	int				i;
+	bool			found_player;
+	t_player_info	player_info;
 
-
-static void	update_position(char current_char, int *line_number, int *column_number)
-{
-	if (current_char == '\n')
+	i = 0;
+	initialize_variables(&i, &player_info.line_number,
+		&player_info.column_number, &found_player);
+	player_info.map = map;
+	player_info.found_player = &found_player;
+	while (i < length)
 	{
-		(*line_number)++;
-		*column_number = 0;
+		if (!found_player)
+		{
+			if (!process_player_char(map_content[i], &player_info))
+				return (false);
+		}
+		calculate_map(map);
+		update_position(map_content[i],
+			&player_info.line_number, &player_info.column_number);
+		i++;
 	}
-	else
-	{
-		(*column_number)++;
-	}
-}
-
-static bool check_for_multiple_players(bool found_player)
-{
-    if (found_player)
-    {
-        printf("Multiple player start positions found. Invalid map.\n");
-        return false;
-    }
-    return true;
-}
-
-bool find_player_position_and_direction(const char *map_content, int length, t_structure_map *map_info)
-{
-    int i;
-    int line_number;
-    int column_number;
-    bool found_player;
-
-    initialize_variables(&i, &line_number, &column_number, &found_player);
-    while (i < length)
-    {
-        char current_char = map_content[i];
-        if (!found_player && (current_char == 'N' || current_char == 'S' || current_char == 'E' || current_char == 'W'))
-        {
-            if (check_for_multiple_players(found_player))
-            {
-                found_player = true;
-                update_player_info(map_info, line_number, column_number, current_char);
-            }
-            else
-            {
-                return false;
-            }
-        }
-        calculate_map(map_info);
-        update_position(current_char, &line_number, &column_number);
-        i++;
-    }
-    if (!found_player)
-    {
-        printf("Player start position not found. Invalid map.\n");
-        return false;
-    }
-    return true;
+	if (!found_player)
+		return (false);
+	return (true);
 }

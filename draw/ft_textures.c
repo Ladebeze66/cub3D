@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 17:39:11 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/25 20:34:32 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:17:21 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,19 @@ void	draw_texture_line(t_texture_params *params, float y, int textureY)
 	int	color;
 
 	texturewidth = params->w->s_img.texture_width;
-	x = params->startX;
-	while (x < params->endX)
+	x = params->start_x;
+	while (x < params->end_x)
 	{
-		if (params->wallDir == NORTH || params->wallDir == SOUTH)
+		if (params->wall_dir == NORTH || params->wall_dir == SOUTH)
 			texturex = (int)(params->rx * texturewidth
-					/ params->w->s_map.mapS) % texturewidth;
+					/ params->w->s_map.map_s) % texturewidth;
 		else
 			texturex = (int)(params->ry * texturewidth
-					/ params->w->s_map.mapS) % texturewidth;
+					/ params->w->s_map.map_s) % texturewidth;
 		if (texturex >= texturewidth)
 			texturex = texturewidth - 1;
 		color = get_texture_color(params->w,
-				params->wallDir, texturex, textureY);
+				params->wall_dir, texturex, textureY);
 		put_pixel_img(params->w, x, y, color);
 		x++;
 	}
@@ -46,10 +46,10 @@ void	draw_texture(t_texture_params *params)
 	int		texturey;
 
 	textureheight = params->w->s_img.texture_height;
-	y = params->lineOff;
-	while (y < params->lineOff + params->lineH)
+	y = params->line_off;
+	while (y < params->line_off + params->line_h)
 	{
-		perspectivefactor = (y - params->lineOff) / params->lineH;
+		perspectivefactor = (y - params->line_off) / params->line_h;
 		texturey = perspectivefactor * textureheight;
 		if (texturey >= textureheight)
 			texturey = textureheight - 1;
@@ -58,14 +58,15 @@ void	draw_texture(t_texture_params *params)
 	}
 }
 
-void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
+void	*get_selected_texture(t_structure_main *w, t_WallDirection wallDir)
 {
-	void *texture = NULL;
-	if (w->current_wall_type == '2') {
-        return w->s_img.door_texture; // Texture pour porte fermée
-    } /*else if (w->current_wall_type == '3') {
-        return w->s_img.open_door_texture; // Texture pour porte ouverte
-    }*/
+	void	*texture;
+
+	texture = NULL;
+	if (w->current_wall_type == '2')
+	{
+		return (w->s_img.door_texture);
+	}
 	else if (wallDir == NORTH)
 		return (w->s_img.north_texture);
 	else if (wallDir == SOUTH)
@@ -76,12 +77,12 @@ void	*get_selected_texture(t_structure_main *w, WallDirection wallDir)
 		return (w->s_img.east_texture);
 	else
 	{
-		fprintf(stderr, "Invalid wall direction.\n");
+		printf("Invalid wall direction.\n");
 		exit_error(w);
 		return (NULL);
 	}
-	 if (texture == NULL)
-		fprintf(stderr, "get_selected_texture: selected texture is NULL\n");
+	if (texture == NULL)
+		printf("get_selected_texture: selected texture is NULL\n");
 	else
 		printf("get_selected_texture: selected texture = %p\n", texture);
 }
@@ -95,7 +96,7 @@ t_texture_data	get_texture_data(void *texture)
 	return (texture_data);
 }
 
-int	get_texture_color(t_structure_main *w, WallDirection wallDir,
+int	get_texture_color(t_structure_main *w, t_WallDirection wallDir,
 		int textureX, int textureY)
 {
 	void			*selected_texture;
@@ -108,7 +109,6 @@ int	get_texture_color(t_structure_main *w, WallDirection wallDir,
 		fprintf(stderr, "No texture selected for color retrieval\n");
 		return (0);
 	}
-
 	texture_data = get_texture_data(selected_texture);
 	pixel_pos = (textureX + textureY * w->s_img.texture_width)
 		* (texture_data.bpp / 8);
