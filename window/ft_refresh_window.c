@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 19:50:24 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 20:23:13 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 17:04:53 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	rescale_sprite(t_structure_main *w, t_state *state)
 	params.original_img = w->s_img.roomadslam[state->jkl];
 	params.original_width = 112;
 	params.original_height = 112;
-	params.new_width = w->s_map.map_s;
-	params.new_height = w->s_map.map_s;
-	params.px = w->s_player.px - w->s_map.map_s / 2;
-	params.py = w->s_player.py - w->s_map.map_s / 2;
+	params.new_width = w->s_map.map_s * 5;
+	params.new_height = w->s_map.map_s * 5;
+	params.px = w->s_player.px - w->s_map.map_s / 2 - 5;
+	params.py = w->s_player.py - w->s_map.map_s / 2 - 5;
 	rescale_image(&params, w);
 }
 

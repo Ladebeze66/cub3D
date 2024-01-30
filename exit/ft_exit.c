@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 16:06:24 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 16:07:27 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 17:12:14 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ static void	destroy_images(t_structure_main *w)
 		mlx_destroy_image(w->s_win.mlx, w->s_img.buffer);
 		mlx_destroy_image(w->s_win.mlx, w->s_img.img_player);
 		mlx_destroy_image(w->s_win.mlx, w->s_img.img_wall);
-		mlx_destroy_image(w->s_win.mlx, w->s_img.pedro_wall);
 		mlx_destroy_image(w->s_win.mlx, w->s_img.north_texture);
 		mlx_destroy_image(w->s_win.mlx, w->s_img.south_texture);
 		mlx_destroy_image(w->s_win.mlx, w->s_img.west_texture);

@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 19:15:53 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 15:47:48 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 17:11:58 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ void	load_textures(t_structure_main *w, int *temp)
 	w->s_img.img_wall = mlx_xpm_file_to_image(w->s_win.mlx,
 			"sprite/wall.xpm", temp, temp);
 	load_roomadslam_textures(w, temp);
-	w->s_img.pedro_wall = mlx_xpm_file_to_image(w->s_win.mlx,
-			"sprite/pedrop/frame_061_delay-0.03s.xpm", temp, temp);
 }
 
 void	init_buffer(t_structure_main *w)
