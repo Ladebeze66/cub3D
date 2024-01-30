@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 17:22:58 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 14:00:04 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 14:03:47 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	mlx_set_font(void *mlx_ptr, void *win_ptr, char *name);
 void	*mlx_xpm_to_image(void *mlx_ptr, char **xpm_data,
 			int *width, int *height);
 void	*mlx_xpm_file_to_image(void *mlx_ptr, char *filename,
-				int *width, int *height);
+			int *width, int *height);
 int		mlx_destroy_window(void *mlx_ptr, void *win_ptr);
 int		mlx_destroy_image(void *mlx_ptr, void *img_ptr);
 int		mlx_destroy_display(void *mlx_ptr);
