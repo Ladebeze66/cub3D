@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 12:33:22 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 13:58:28 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 15:13:41 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,24 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	return (ptr);
 }
 
-void	*ft_realloc(void *ptr, size_t size)
+void	*ft_realloc(void *ptr, size_t newsize, size_t oldsize)
 {
-	void	*new_ptr;
+	char	*newptr;
 
 	if (ptr == NULL)
 	{
-		return (malloc(size));
+		return (malloc(newsize));
 	}
-	if (size == 0)
+	if (newsize <= oldsize)
 	{
-		free(ptr);
+		return (ptr);
+	}
+	newptr = malloc(newsize);
+	if (newptr == NULL)
+	{
 		return (NULL);
 	}
-	new_ptr = malloc(size);
-	if (new_ptr == NULL)
-	{
-		return (NULL);
-	}
-	ft_memcpy(new_ptr, ptr, size);
+	ft_memcpy(newptr, ptr, oldsize);
 	free(ptr);
-	return (new_ptr);
+	return (newptr);
 }

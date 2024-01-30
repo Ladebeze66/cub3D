@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 13:57:20 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 15:14:01 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -472,6 +472,6 @@ bool	check_for_multiple_players(bool found_player);
 int		check_boundaries(t_point p, t_map_check *map_check);
 int		is_space_surrounded_by_walls(t_map_check *map_check, t_point p);
 void	*ft_calloc(size_t nmemb, size_t size);
-void	*ft_realloc(void *ptr, size_t size);
+void	*ft_realloc(void *ptr, size_t newsize, size_t oldsize);
 
 #endif

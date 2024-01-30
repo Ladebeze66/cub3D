@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 16:19:13 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 13:55:56 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 15:15:52 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ bool	read_map_line(int fd, char *buffer, ssize_t *bytes_read)
 bool	process_line(char **map_buffer, int *map_length, char *line)
 {
 	ssize_t	bytes_read;
+	size_t	new_total_size;
 
 	bytes_read = ft_strlen(line);
-	*map_buffer = ft_realloc(*map_buffer, *map_length + bytes_read + 1);
+	new_total_size = *map_length + bytes_read + 1;
+	*map_buffer = ft_realloc(*map_buffer, new_total_size, *map_length);
 	if (!*map_buffer)
 	{
 		perror("Error reallocating memory for map buffer");
