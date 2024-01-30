@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 20:09:43 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 13:57:20 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,7 @@
 # include <assert.h>
 # include "include/mlx.h"
 
-# ifndef BUFFER_SIZE
 # define BUFFER_SIZE 100000
-# endif
-
 # define PI 3.14159265359
 # define P2 1.57079632679
 # define P3 4.71238898038
@@ -362,7 +359,7 @@ typedef struct s_draw_params
 	int		texturewidth;
 	int		textureheight;
 	int		texturex;
-	int		textureY;
+	int		texture_y;
 	int		a;
 	int		b;
 	int		c;
@@ -394,7 +391,7 @@ typedef struct s_point
 typedef struct s_map_check
 {
 	char	*map;
-	int		maxWidth;
+	int		max_width;
 	int		height;
 }	t_map_check;
 
@@ -469,9 +466,12 @@ void	initialize_variables(int *i, int *line_number,
 bool	check_for_player(char current_char, bool *found_player);
 void	update_player_info(t_structure_map *map_info,
 			int line_number, int column_number, char player_direction);
-void	update_position(char current_char, int *line_number, int *column_number);
+void	update_position(char current_char,
+			int *line_number, int *column_number);
 bool	check_for_multiple_players(bool found_player);
 int		check_boundaries(t_point p, t_map_check *map_check);
 int		is_space_surrounded_by_walls(t_map_check *map_check, t_point p);
+void	*ft_calloc(size_t nmemb, size_t size);
+void	*ft_realloc(void *ptr, size_t size);
 
 #endif

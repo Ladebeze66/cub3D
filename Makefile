@@ -6,7 +6,7 @@
 #    By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/14 16:54:48 by fgras-ca          #+#    #+#              #
-#    Updated: 2024/01/29 20:12:12 by fgras-ca         ###   ########.fr        #
+#    Updated: 2024/01/30 12:40:15 by fgras-ca         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,6 +58,7 @@ SRC		=	main.c								\
 			./parsing/ft_find_player_utils.c	\
 			./parsing/ft_map_check_utils.c		\
 			./parsing/ft_text_and_col_utils.c	\
+			./utils/ft_utils_mem.c				\
 
 OBJ		= $(SRC:.c=.o)
 

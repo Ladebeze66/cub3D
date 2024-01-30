@@ -6,52 +6,56 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 16:19:13 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 20:17:57 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 13:55:56 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
 
+bool	read_map_line(int fd, char *buffer, ssize_t *bytes_read)
+{
+	*bytes_read = read(fd, buffer, 1023);
+	if (*bytes_read <= 0)
+		return (false);
+	buffer[*bytes_read] = '\0';
+	return (true);
+}
+
+bool	process_line(char **map_buffer, int *map_length, char *line)
+{
+	ssize_t	bytes_read;
+
+	bytes_read = ft_strlen(line);
+	*map_buffer = ft_realloc(*map_buffer, *map_length + bytes_read + 1);
+	if (!*map_buffer)
+	{
+		perror("Error reallocating memory for map buffer");
+		return (false);
+	}
+	ft_memcpy(*map_buffer + *map_length, line, bytes_read);
+	*map_length += bytes_read;
+	(*map_buffer)[*map_length] = '\0';
+	return (true);
+}
+
 bool	handle_map(int fd, char **map_buffer, int *map_length)
 {
-	char	*line;
-	size_t	len;
-	ssize_t	read;
+	char	buffer[1024];
+	ssize_t	bytes_read;
 	bool	start_copying;
-	FILE *stream;
 
-	stream = fdopen(fd, "r");
-	line = NULL;
-	len = 0;
 	start_copying = false;
 	*map_length = 0;
 	*map_buffer = NULL;
-	if (!stream)
+	while (read_map_line(fd, buffer, &bytes_read))
 	{
-		perror("Error converting file descriptor to FILE *");
-		return (false);
-	}
-	while ((read = getline(&line, &len, stream)) != -1)
-	{
-		if (!start_copying && (ft_strchr(line, '1') || ft_strchr(line, '0')))
+		if (!start_copying && (ft_strchr(buffer, '1')
+				|| ft_strchr(buffer, '0')))
 			start_copying = true;
 		if (start_copying)
-		{
-			*map_buffer = realloc(*map_buffer, *map_length + read + 1);
-			if (!*map_buffer)
-			{
-				perror("Error reallocating memory for map buffer");
-				free(line);
-				fclose(stream);
+			if (!process_line(map_buffer, map_length, buffer))
 				return (false);
-			}
-			ft_memcpy(*map_buffer + *map_length, line, read);
-			*map_length += read;
-			(*map_buffer)[*map_length] = '\0';
-		}
 	}
-	free(line);
-	fclose(stream);
 	return (*map_buffer != NULL);
 }
 

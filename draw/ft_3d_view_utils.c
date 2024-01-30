@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 17:00:21 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 17:05:55 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 13:49:33 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ static void	draw_texture_line(t_ray_params *rparams,
 	while (y < rparams->line_off + rparams->line_h)
 	{
 		perspectivefactor = (float)(y - rparams->line_off) / rparams->line_h;
-		dparams->textureY = perspectivefactor * dparams->textureheight;
-		if (dparams->textureY >= dparams->textureheight)
-			dparams->textureY = dparams->textureheight - 1;
+		dparams->texture_y = perspectivefactor * dparams->textureheight;
+		if (dparams->texture_y >= dparams->textureheight)
+			dparams->texture_y = dparams->textureheight - 1;
 		set_texture_coords(tparams, dparams);
 		color = get_texture_color(tparams->w,
 				tparams->wall_dir, dparams->texturex, y);
