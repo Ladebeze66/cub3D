@@ -6,34 +6,11 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:17:56 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 17:53:45 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 16:15:56 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../cub3d.h"
-
-int	*kill_prog(t_structure_main *w)
-{
-	int	i;
-
-	mlx_destroy_window(w->s_win.mlx, w->s_win.win);
-	mlx_destroy_image(w->s_win.mlx, w->s_img.buffer);
-	mlx_destroy_image(w->s_win.mlx, w->s_img.img_player);
-	mlx_destroy_image(w->s_win.mlx, w->s_img.img_wall);
-	mlx_destroy_image(w->s_win.mlx, w->s_img.pedro_wall);
-	i = -1;
-	while (++i <= 10)
-		mlx_destroy_image(w->s_win.mlx, w->s_img.roomadslam[i]);
-	if (w->s_map.map)
-	{
-		free(w->s_map.map);
-		w->s_map.map = NULL;
-	}
-	mlx_destroy_display(w->s_win.mlx);
-	free(w->s_win.mlx);
-	exit(0);
-	return (0);
-}
 
 void	adjust_player_angle(t_structure_main *w, int key)
 {

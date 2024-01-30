@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:09:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 17:43:10 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 16:21:09 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	check_collision(t_structure_main *w, double future_x,
 		map_x = (int)((future_x + coll_params->dx[i]) / w->s_map.map_s);
 		map_y = (int)((future_y + coll_params->dy[i]) / w->s_map.map_s);
 		map_position = w->s_map.map[map_y * w->s_map.map_x + map_x];
-		if (map_position != '0' && map_position != '3')
+		if (map_position == '1' || map_position == '2')
 			return (0);
 		i++;
 	}

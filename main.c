@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 14:59:40 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 15:47:44 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ int	setup_and_load_map(int argc, char **argv,
 	if (!load_cub_file(argv[1], textures, &w->s_map))
 	{
 		printf("Failed to load the map or map is not closed. Exiting...\n");
+		w->error = 1;
+		exit_error(w);
 		return (0);
 	}
 	if (w->s_map.map == NULL)

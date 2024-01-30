@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/14 16:56:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 15:14:01 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 15:47:04 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ typedef struct s_structure_main
 	t_texture			*t;
 	char				current_wall_type;
 	t_sprite			sprite;
+	int					error;
 }	t_structure_main;
 
 typedef struct s_res_params {
