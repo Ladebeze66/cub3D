@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 19:54:51 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/29 18:58:31 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 16:59:15 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ static bool	process_player_char(char current_char, t_player_info *player_info)
 		}
 		else
 		{
-			printf("Multiple player start positions found. Invalid map.\n");
 			return (false);
 		}
 	}
@@ -49,11 +48,8 @@ bool	find_player(const char *map_content, int length, t_structure_map *map)
 	player_info.found_player = &found_player;
 	while (i < length)
 	{
-		if (!found_player)
-		{
-			if (!process_player_char(map_content[i], &player_info))
-				return (false);
-		}
+		if (!process_player_char(map_content[i], &player_info))
+			return (false);
 		calculate_map(map);
 		update_position(map_content[i],
 			&player_info.line_number, &player_info.column_number);
