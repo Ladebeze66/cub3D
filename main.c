@@ -6,7 +6,7 @@
 /*   By: fgras-ca <fgras-ca@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 18:45:52 by fgras-ca          #+#    #+#             */
-/*   Updated: 2024/01/30 14:57:34 by fgras-ca         ###   ########.fr       */
+/*   Updated: 2024/01/30 14:59:40 by fgras-ca         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	setup_and_load_map(int argc, char **argv,
 {
 	if (argc != 2)
 	{
-		fprintf(stderr, "Usage: %s <map_file>\n", argv[0]);
+		printf("Usage: %s <map_file>\n", argv[0]);
 		return (0);
 	}
 	if (!load_cub_file(argv[1], textures, &w->s_map))
