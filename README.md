@@ -48,20 +48,7 @@ Configurer les callbacks pour les entrées clavier et souris afin de permettre l
 Affichage de la Minicarte :
 
 Dessiner une représentation 2D de la carte et de la position du joueur pour faciliter la navigation.
-📂 Structure du Projet
-Répertoires Principaux :
 
-src/ : Contient le code source principal du projet.
-include/ : Contient les fichiers d'en-tête (.h) pour les déclarations de fonctions et les définitions de structures.
-textures/ : Stocke les fichiers d'images utilisés pour les textures.
-maps/ : Contient les fichiers de configuration des cartes du jeu.
-Fichiers Clés :
-
-main.c : Point d'entrée du programme, gère l'initialisation et la boucle principale du jeu.
-raycasting.c : Implémente la logique du raycasting pour le rendu 3D.
-input.c : Gère les entrées utilisateur pour le mouvement et les actions.
-parser.c : Contient les fonctions pour lire et interpréter les fichiers de configuration de la carte.
-render.c : Gère le rendu des images à l'écran, y compris l'application des textures.
 🧪 Tests et Validation
 Tests Fonctionnels :
 
